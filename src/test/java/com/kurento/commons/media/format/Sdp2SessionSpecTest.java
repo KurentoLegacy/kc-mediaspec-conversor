@@ -1,5 +1,7 @@
 package com.kurento.commons.media.format;
 
+import javax.sdp.SdpException;
+
 import junit.framework.TestCase;
 
 import org.slf4j.Logger;
@@ -31,7 +33,8 @@ public class Sdp2SessionSpecTest extends TestCase {
 			"a=rtpmap:0 PCMU/8000\r\n" +
 			"a=rtpmap:8 PCMA/8000\r\n" +
 			"a=rtpmap:97 iLBC/8000\r\n" +
-			"m=video 51372 RTP/AVP 31 32\r\n" +
+			"m=video 51372 RTP/AVP 31 32 106\r\n" +
+			"a=rtpmap:106 H263-1998/90000\r\n" +
 			"a=rtpmap:31 H261/90000\r\n" +
 			"a=fmtp:31 QCIF=1;CIF=1\r\n" +
 			"a=rtpmap:32 MPV/90000\r\n";
@@ -64,10 +67,31 @@ public class Sdp2SessionSpecTest extends TestCase {
 			log.info("Generated:\n" + SdpConversor.sdpFromSessionSpec(spec));
 			log.info("---------------------------");
 			spec = SdpConversor.sessionSpecFromSDP(sdp3);
-			spec = SdpConversor.sessionSpecFromSDP(sdp3);
 			log.info("Sdp:\n" + sdp3);
 			log.info("SessionSpec:\n" + spec);
 			log.info("Generated:\n" + SdpConversor.sdpFromSessionSpec(spec));
+
+			SessionSpec spec0 = SdpConversor.sessionSpecFromSDP(sdp2);
+			SessionSpec spec1 = spec;
+			SessionSpec[] merge = SessionSpec.intersect(spec0, spec1);
+			log.info("Session0:\n" + spec0);
+			log.info("Session1:\n" + spec1 + "\n\n");
+
+			log.info("Merge0:\n" + merge[0]);
+			log.info("Merge1:\n" + merge[1]);
+
+			try {
+				log.info("Merge0SDP:\n"
+						+ SdpConversor.sdpFromSessionSpec(merge[0]));
+			} catch (SdpException e) {
+				log.info("Merge0SDP:\nerror");
+			}
+			try {
+				log.info("Merge1SDP:\n"
+						+ SdpConversor.sdpFromSessionSpec(merge[1]));
+			} catch (SdpException e) {
+				log.info("Merge1SDP:\nerror");
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
