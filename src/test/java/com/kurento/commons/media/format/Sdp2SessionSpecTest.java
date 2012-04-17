@@ -42,7 +42,7 @@ public class Sdp2SessionSpecTest extends TestCase {
 			"c=IN IP4 193.147.51.16\r\n" +
 			"t=0 0\r\n" +
 			"m=audio 7078 RTP/AVP 8 101\r\n" +
-			"b=AS:256\n\r" +
+			"b=AS:256\r\n" +
 			"a=rtpmap:8 PCMA/8000/1\r\n" +
 			"a=rtpmap:101 telephone-event/8000/1\r\n" +
 			"a=fmtp:101 0-11\r\n" +
@@ -53,22 +53,21 @@ public class Sdp2SessionSpecTest extends TestCase {
 	public void testInit() {
 		try {
 			SessionSpec spec = SdpConversor.sessionSpecFromSDP(sdp);
-			log.info("Sdp:\n");
-			log.info(sdp);
-			log.info("SessionSpec:\n");
-			log.info(spec + "");
+			spec = SdpConversor.sessionSpecFromSDP(sdp);
+			log.info("Sdp:\n" + sdp);
+			log.info("SessionSpec:\n" + spec);
+			log.info("Generated:\n" + SdpConversor.sdpFromSessionSpec(spec));
 			log.info("---------------------------");
 			spec = SdpConversor.sessionSpecFromSDP(sdp2);
-			log.info("Sdp:\n");
-			log.info(sdp2);
-			log.info("SessionSpec:\n");
-			log.info(spec + "");
+			log.info("Sdp:\n" + sdp2);
+			log.info("SessionSpec:\n" + spec);
+			log.info("Generated:\n" + SdpConversor.sdpFromSessionSpec(spec));
 			log.info("---------------------------");
 			spec = SdpConversor.sessionSpecFromSDP(sdp3);
-			log.info("Sdp:\n");
-			log.info(sdp3);
-			log.info("SessionSpec:\n");
-			log.info(spec + "");
+			spec = SdpConversor.sessionSpecFromSDP(sdp3);
+			log.info("Sdp:\n" + sdp3);
+			log.info("SessionSpec:\n" + spec);
+			log.info("Generated:\n" + SdpConversor.sdpFromSessionSpec(spec));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
