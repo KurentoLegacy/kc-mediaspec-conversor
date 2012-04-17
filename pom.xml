@@ -14,6 +14,8 @@
 		<!-- Dependencies Versions -->
 		<kc-mediaspec.version>2.0.0-SNAPSHOT</kc-mediaspec.version>
 		<nist-sdp.version>1.0</nist-sdp.version>
+		<junit.version>3.8.1</junit.version>
+		<slf4j.version>1.6.4</slf4j.version>
 
 		<!-- Plugins Versions -->
 
@@ -56,6 +58,18 @@
 			<groupId>javax.sdp</groupId>
 			<artifactId>nist-sdp</artifactId>
 			<version>${nist-sdp.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>${junit.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-simple</artifactId>
+			<version>${slf4j.version}</version>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 

@@ -178,7 +178,7 @@ public class SdpConversor {
 		return Integer.parseInt(tokens[0]);
 	}
 
-	public static PayloadRtp getDefaultRtpPayload(int id, MediaType type)
+	private static PayloadRtp getDefaultRtpPayload(int id, MediaType type)
 			throws SdpException {
 		/*
 	      According to RFC 3551
@@ -387,5 +387,11 @@ public class SdpConversor {
 			rtp.setChannels(channels);
 
 		return rtp;
+	}
+
+	public static String getSdpFromSessionSpec(SessionSpec spec) {
+		StringBuilder sb = new StringBuilder();
+
+		return sb.toString();
 	}
 }
