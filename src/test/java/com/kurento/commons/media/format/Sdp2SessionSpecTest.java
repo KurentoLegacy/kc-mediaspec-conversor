@@ -55,23 +55,23 @@ public class Sdp2SessionSpecTest extends TestCase {
 
 	public void testInit() {
 		try {
-			SessionSpec spec = SdpConversor.sessionSpecFromSDP(sdp);
-			spec = SdpConversor.sessionSpecFromSDP(sdp);
+			SessionSpec spec = SdpConversor.sdp2SessionSpec(sdp);
+			spec = SdpConversor.sdp2SessionSpec(sdp);
 			log.info("Sdp:\n" + sdp);
 			log.info("SessionSpec:\n" + spec);
-			log.info("Generated:\n" + SdpConversor.sdpFromSessionSpec(spec));
+			log.info("Generated:\n" + SdpConversor.sessionSpec2Sdp(spec));
 			log.info("---------------------------");
-			spec = SdpConversor.sessionSpecFromSDP(sdp2);
+			spec = SdpConversor.sdp2SessionSpec(sdp2);
 			log.info("Sdp:\n" + sdp2);
 			log.info("SessionSpec:\n" + spec);
-			log.info("Generated:\n" + SdpConversor.sdpFromSessionSpec(spec));
+			log.info("Generated:\n" + SdpConversor.sessionSpec2Sdp(spec));
 			log.info("---------------------------");
-			spec = SdpConversor.sessionSpecFromSDP(sdp3);
+			spec = SdpConversor.sdp2SessionSpec(sdp3);
 			log.info("Sdp:\n" + sdp3);
 			log.info("SessionSpec:\n" + spec);
-			log.info("Generated:\n" + SdpConversor.sdpFromSessionSpec(spec));
+			log.info("Generated:\n" + SdpConversor.sessionSpec2Sdp(spec));
 
-			SessionSpec spec0 = SdpConversor.sessionSpecFromSDP(sdp2);
+			SessionSpec spec0 = SdpConversor.sdp2SessionSpec(sdp2);
 			SessionSpec spec1 = spec;
 			SessionSpec[] merge = SessionSpec.intersect(spec0, spec1);
 			log.info("Session0:\n" + spec0);
@@ -82,13 +82,13 @@ public class Sdp2SessionSpecTest extends TestCase {
 
 			try {
 				log.info("Merge0SDP:\n"
-						+ SdpConversor.sdpFromSessionSpec(merge[0]));
+						+ SdpConversor.sessionSpec2Sdp(merge[0]));
 			} catch (SdpException e) {
 				log.info("Merge0SDP:\nerror");
 			}
 			try {
 				log.info("Merge1SDP:\n"
-						+ SdpConversor.sdpFromSessionSpec(merge[1]));
+						+ SdpConversor.sessionSpec2Sdp(merge[1]));
 			} catch (SdpException e) {
 				log.info("Merge1SDP:\nerror");
 			}

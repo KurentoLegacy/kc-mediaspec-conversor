@@ -34,12 +34,12 @@ public class SdpConversor {
 	private static final String DEFAULT_SDP_VERSION = "0";
 	private static final String DEFAULT_VERSION = "12345";
 
-	public static SessionSpec sessionSpecFromSDP(String sdp)
+	public static SessionSpec sdp2SessionSpec(String sdp)
 			throws SdpException {
-		return sessionSpecFromSDP(SdpFactory.getInstance().createSessionDescription(sdp));
+		return sdp2SessionSpec(SdpFactory.getInstance().createSessionDescription(sdp));
 	}
 
-	public static SessionSpec sessionSpecFromSDP(SessionDescription sdp)
+	public static SessionSpec sdp2SessionSpec(SessionDescription sdp)
 			throws SdpException {
 		List<MediaSpec> medias = new ArrayList<MediaSpec>();
 
@@ -54,7 +54,7 @@ public class SdpConversor {
 				if (bandWidth >= 0
 						&& (mediaBandWidth <= 0 || mediaBandWidth > bandWidth))
 					media.setBandwidth(BandWidth.AS, bandWidth);
-				MediaSpec ms = mediaSpecFromSDP(media, sdp);
+				MediaSpec ms = sdp2MediaSpec(media, sdp);
 				medias.add(ms);
 			} catch (SdpException ex) {
 
@@ -65,7 +65,7 @@ public class SdpConversor {
 		return spec;
 	}
 
-	public static MediaSpec mediaSpecFromSDP(MediaDescription md,
+	private static MediaSpec sdp2MediaSpec(MediaDescription md,
 			SessionDescription sdp) throws SdpException {
 		Mode mediaTypeMode = null;
 		Media media = md.getMedia();
@@ -80,7 +80,7 @@ public class SdpConversor {
 			throw new SdpException("No formats found");
 		for (String format : formats) {
 			try {
-				Payload payload = PayloadFromSDP(format, md);
+				Payload payload = sdp2Payload(format, md);
 				payloads.add(payload);
 			} catch (NumberFormatException ex) {
 
@@ -98,17 +98,17 @@ public class SdpConversor {
 				Mode mode = Mode.getInstance(name);
 				if (SdpConstants.RTPMAP.equalsIgnoreCase(name)) {
 					payload = getPayloadById(payloads,
-							getPayloadFromString(field.getValue()));
+							getPayloadIdFromString(field.getValue()));
 
 					/* If already exists create a new one with data */
 					if (payload != null)
 						payloads.remove(payload);
 
-					payload = PayloadFromSDP(field.getValue(), md);
+					payload = sdp2Payload(field.getValue(), md);
 					payloads.add(payload);
 				} else if (SdpConstants.FMTP.equalsIgnoreCase(name)) {
 					payload = getPayloadById(payloads,
-							getPayloadFromString(field.getValue()));
+							getPayloadIdFromString(field.getValue()));
 					if (payload != null) {
 						// TODO: Set format parameters
 					}
@@ -136,7 +136,7 @@ public class SdpConversor {
 		return ms;
 	}
 
-	private static Payload PayloadFromSDP(String format, MediaDescription md)
+	private static Payload sdp2Payload(String format, MediaDescription md)
 			throws SdpException {
 		Payload payload = new Payload();
 
@@ -178,7 +178,7 @@ public class SdpConversor {
 		return null;
 	}
 
-	private static int getPayloadFromString(String str) {
+	private static int getPayloadIdFromString(String str) {
 		String[] tokens = str.split(" ");
 		return Integer.parseInt(tokens[0]);
 	}
@@ -394,7 +394,7 @@ public class SdpConversor {
 		return rtp;
 	}
 
-	public static String sdpFromSessionSpec(SessionSpec spec)
+	public static String sessionSpec2Sdp(SessionSpec spec)
 			throws SdpException {
 		StringBuilder sb = new StringBuilder();
 
@@ -411,13 +411,13 @@ public class SdpConversor {
 		sb.append(SDPFieldNames.TIME_FIELD + "0 0" + ENDLINE);
 
 		for (MediaSpec media : spec.getMediaSpecs()) {
-			sb.append(sdpFromMediaSpec(media));
+			sb.append(mediaSpec2Sdp(media));
 		}
 
 		return sb.toString();
 	}
 
-	private static String sdpFromMediaSpec(MediaSpec media) {
+	private static String mediaSpec2Sdp(MediaSpec media) {
 		StringBuilder sb = new StringBuilder();
 		Set<MediaType> types = media.getTypes();
 		TransportRtp transport = media.getTransport().getRtp();
@@ -454,7 +454,7 @@ public class SdpConversor {
 			}
 
 			sb.append(" ").append(rtp.getId());
-			payloadString.append(sdpPayloadFromPayload(rtp));
+			payloadString.append(payloadRtp2Sdp(rtp));
 		}
 		sb.append(ENDLINE);
 		sb.append(payloadString);
@@ -472,7 +472,7 @@ public class SdpConversor {
 		return sb.toString();
 	}
 
-	private static String sdpPayloadFromPayload(PayloadRtp payload) {
+	private static String payloadRtp2Sdp(PayloadRtp payload) {
 		StringBuilder sb = new StringBuilder();
 
 		sb.append(SDPFieldNames.ATTRIBUTE_FIELD + SdpConstants.RTPMAP + ":"
