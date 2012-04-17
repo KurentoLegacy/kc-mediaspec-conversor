@@ -167,12 +167,12 @@ public class SdpConversor {
 
 	private static Payload getPayloadById(List<Payload> payloads, int id) {
 		for (Payload payload : payloads) {
-			PayloadRtp rtp = payload.getRtp();
-			if (rtp == null)
-				continue;
-
-			if (rtp.getId() == id)
-				return payload;
+			try {
+				PayloadRtp rtp = payload.getRtp();
+				if (rtp.getId() == id)
+					return payload;
+			} catch (ArgumentNotSetException e) {
+			}
 		}
 
 		return null;
@@ -420,14 +420,16 @@ public class SdpConversor {
 	private static String mediaSpec2Sdp(MediaSpec media) {
 		StringBuilder sb = new StringBuilder();
 		Set<MediaType> types = media.getTypes();
-		TransportRtp transport = media.getTransport().getRtp();
+		TransportRtp transport;
+		try {
+			transport = media.getTransport().getRtp();
+		} catch (ArgumentNotSetException e1) {
+			return "";
+		}
 
 		if (types.size() != 1) {
 			return "";
 		}
-
-		if (transport == null)
-			return "";
 
 		sb.append(SDPFieldNames.MEDIA_FIELD + types.iterator().next() + " ");
 		if (media.getPayloads().size() == 0)
@@ -440,21 +442,18 @@ public class SdpConversor {
 		int bitRate = -1;
 
 		for (Payload payload : media.getPayloads()) {
-			PayloadRtp rtp = payload.getRtp();
-			if (rtp == null)
-				continue;
 
 			try {
+				PayloadRtp rtp = payload.getRtp();
 				int rtpBitrate = rtp.getBitrate();
 				if (rtpBitrate != -1 && (rtpBitrate < bitRate || bitRate == -1)) {
 					bitRate = rtpBitrate;
 				}
-			} catch (ArgumentNotSetException e) {
+				sb.append(" ").append(rtp.getId());
+				payloadString.append(payloadRtp2Sdp(rtp));
+			} catch (ArgumentNotSetException e1) {
 
 			}
-
-			sb.append(" ").append(rtp.getId());
-			payloadString.append(payloadRtp2Sdp(rtp));
 		}
 		sb.append(ENDLINE);
 		sb.append(payloadString);
@@ -491,14 +490,17 @@ public class SdpConversor {
 	private static String getAddress(SessionSpec spec) throws SdpException {
 		String address = null;
 		for (MediaSpec media : spec.getMediaSpecs()) {
-			TransportRtp tr = media.getTransport().getRtp();
-			if (tr == null)
+			TransportRtp tr = null;
+			try {
+				tr = media.getTransport().getRtp();
+			} catch (ArgumentNotSetException e) {
 				continue;
+			}
 
 			if (address == null)
 				address = tr.getAddress();
 			else if (!address.equalsIgnoreCase(tr.getAddress())) {
-				throw new SdpException("Address does not match on each media");
+				throw new SdpException("Address does not match on all medias");
 			}
 		}
 		if (address == null)
