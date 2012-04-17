@@ -1,10 +1,13 @@
 package com.kurento.commons.media.format.conversor;
 
 import gov.nist.javax.sdp.fields.AttributeField;
+import gov.nist.javax.sdp.fields.SDPFieldNames;
+import gov.nist.javax.sdp.fields.SDPKeywords;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.Vector;
 
 import javax.sdp.BandWidth;
@@ -21,10 +24,15 @@ import com.kurento.commons.media.format.SessionSpec;
 import com.kurento.commons.media.format.Transport;
 import com.kurento.commons.media.format.enums.MediaType;
 import com.kurento.commons.media.format.enums.Mode;
+import com.kurento.commons.media.format.exceptions.ArgumentNotSetException;
 import com.kurento.commons.media.format.payload.PayloadRtp;
 import com.kurento.commons.media.format.transport.TransportRtp;
 
 public class SdpConversor {
+
+	private static final String ENDLINE = "\r\n";
+	private static final String DEFAULT_SDP_VERSION = "0";
+	private static final String DEFAULT_VERSION = "12345";
 
 	public static SessionSpec sessionSpecFromSDP(String sdp)
 			throws SdpException {
@@ -103,9 +111,6 @@ public class SdpConversor {
 							getPayloadFromString(field.getValue()));
 					if (payload != null) {
 						// TODO: Set format parameters
-						System.out.println("TODO: Set format parameters");
-						// payload.setFormatParams(PayloadSpec
-						// .removePayloadFromString(field.getValue()));
 					}
 				} else if (mode != null) {
 					mediaTypeMode = mode;
@@ -389,9 +394,106 @@ public class SdpConversor {
 		return rtp;
 	}
 
-	public static String getSdpFromSessionSpec(SessionSpec spec) {
+	public static String sdpFromSessionSpec(SessionSpec spec)
+			throws SdpException {
 		StringBuilder sb = new StringBuilder();
 
+		String address = getAddress(spec);
+
+		sb.append(SDPFieldNames.PROTO_VERSION_FIELD + DEFAULT_SDP_VERSION
+				+ ENDLINE);
+		sb.append(SDPFieldNames.ORIGIN_FIELD + "- " + spec.getId() + " "
+				+ DEFAULT_VERSION + " " + SDPKeywords.IN + " "
+				+ SDPKeywords.IPV4 + " " + address + ENDLINE);
+		sb.append(SDPFieldNames.SESSION_NAME_FIELD + ENDLINE);
+		sb.append(SDPFieldNames.CONNECTION_FIELD + SDPKeywords.IN + " "
+				+ SDPKeywords.IPV4 + " " + address + ENDLINE);
+		sb.append(SDPFieldNames.TIME_FIELD + "0 0" + ENDLINE);
+
+		for (MediaSpec media : spec.getMediaSpecs()) {
+			sb.append(sdpFromMediaSpec(media));
+		}
+
 		return sb.toString();
+	}
+
+	private static String sdpFromMediaSpec(MediaSpec media) {
+		StringBuilder sb = new StringBuilder();
+		Set<MediaType> types = media.getTypes();
+		TransportRtp transport = media.getTransport().getRtp();
+
+		if (types.size() != 1) {
+			return "";
+		}
+
+		if (transport == null)
+			return "";
+
+		sb.append(SDPFieldNames.MEDIA_FIELD + types.iterator().next() + " ");
+		sb.append(transport.getPort() + " " + SdpConstants.RTP_AVP);
+
+		StringBuilder payloadString = new StringBuilder();
+		int bitRate = -1;
+
+		for (Payload payload : media.getPayloads()) {
+			PayloadRtp rtp = payload.getRtp();
+			if (rtp == null)
+				continue;
+
+			try {
+				int rtpBitrate = rtp.getBitrate();
+				if (rtpBitrate != -1 && (rtpBitrate < bitRate || bitRate == -1)) {
+					bitRate = rtpBitrate;
+				}
+			} catch (ArgumentNotSetException e) {
+
+			}
+
+			sb.append(" ").append(rtp.getId());
+			payloadString.append(sdpPayloadFromPayload(rtp));
+		}
+		sb.append(ENDLINE);
+		sb.append(payloadString);
+
+		sb.append(SDPFieldNames.ATTRIBUTE_FIELD + media.getMode() + ENDLINE);
+		if (bitRate > 0)
+			sb.append(SDPFieldNames.BANDWIDTH_FIELD + BandWidth.AS + ":"
+					+ bitRate + ENDLINE);
+
+		return sb.toString();
+	}
+
+	private static String sdpPayloadFromPayload(PayloadRtp payload) {
+		StringBuilder sb = new StringBuilder();
+
+		sb.append(SDPFieldNames.ATTRIBUTE_FIELD + SdpConstants.RTPMAP + ":"
+				+ payload.getId() + " " + payload.getCodecName() + "/"
+				+ payload.getClockRate());
+		try {
+			sb.append("/" + payload.getChannels());
+		} catch (ArgumentNotSetException e) {
+		}
+
+		sb.append(ENDLINE);
+
+		return sb.toString();
+	}
+
+	private static String getAddress(SessionSpec spec) throws SdpException {
+		String address = null;
+		for (MediaSpec media : spec.getMediaSpecs()) {
+			TransportRtp tr = media.getTransport().getRtp();
+			if (tr == null)
+				continue;
+
+			if (address == null)
+				address = tr.getAddress();
+			else if (!address.equalsIgnoreCase(tr.getAddress())) {
+				throw new SdpException("Address does not match on each media");
+			}
+		}
+		if (address == null)
+			throw new SdpException("Address not found");
+		return address;
 	}
 }
