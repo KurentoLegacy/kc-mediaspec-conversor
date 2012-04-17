@@ -430,7 +430,11 @@ public class SdpConversor {
 			return "";
 
 		sb.append(SDPFieldNames.MEDIA_FIELD + types.iterator().next() + " ");
-		sb.append(transport.getPort() + " " + SdpConstants.RTP_AVP);
+		if (media.getPayloads().size() == 0)
+			sb.append(0);
+		else
+			sb.append(transport.getPort());
+		sb.append(" " + SdpConstants.RTP_AVP);
 
 		StringBuilder payloadString = new StringBuilder();
 		int bitRate = -1;
@@ -455,7 +459,12 @@ public class SdpConversor {
 		sb.append(ENDLINE);
 		sb.append(payloadString);
 
-		sb.append(SDPFieldNames.ATTRIBUTE_FIELD + media.getMode() + ENDLINE);
+		sb.append(SDPFieldNames.ATTRIBUTE_FIELD);
+		if (media.getPayloads().size() == 0)
+			sb.append(Mode.INACTIVE);
+		else
+			sb.append(media.getMode());
+		sb.append(ENDLINE);
 		if (bitRate > 0)
 			sb.append(SDPFieldNames.BANDWIDTH_FIELD + BandWidth.AS + ":"
 					+ bitRate + ENDLINE);
