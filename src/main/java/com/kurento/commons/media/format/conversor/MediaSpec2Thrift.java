@@ -17,7 +17,7 @@ import com.kurento.commons.mediaspec.TransportRtp;
 
 public class MediaSpec2Thrift {
 
-	public static SessionSpec thrift2SessionSpec(
+	public static SessionSpec sessionSpec2thrift(
 			com.kurento.commons.media.format.SessionSpec spec) {
 		List<MediaSpec> medias = new ArrayList<MediaSpec>();
 

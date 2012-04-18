@@ -29,7 +29,7 @@ public class ThriftTest extends TestCase {
 	public void testInit() throws SdpException, TException {
 		com.kurento.commons.media.format.SessionSpec spec = SdpConversor
 				.sdp2SessionSpec(sdp);
-		SessionSpec tspec = MediaSpec2Thrift.thrift2SessionSpec(spec);
+		SessionSpec tspec = MediaSpec2Thrift.sessionSpec2thrift(spec);
 		AutoExpandingBufferWriteTransport trans = new AutoExpandingBufferWriteTransport(
 				10, 1.0);
 
