@@ -394,6 +394,12 @@ public class SdpConversor {
 		return rtp;
 	}
 
+	public static SessionDescription sessionSpec2SessionDescription(
+			SessionSpec spec) throws SdpException {
+		return SdpFactory.getInstance().createSessionDescription(
+				sessionSpec2Sdp(spec));
+	}
+
 	public static String sessionSpec2Sdp(SessionSpec spec)
 			throws SdpException {
 		StringBuilder sb = new StringBuilder();
