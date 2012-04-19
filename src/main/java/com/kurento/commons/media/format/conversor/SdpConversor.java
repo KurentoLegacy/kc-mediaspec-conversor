@@ -32,7 +32,8 @@ public class SdpConversor {
 
 	private static final String ENDLINE = "\r\n";
 	private static final String DEFAULT_SDP_VERSION = "0";
-	private static final String DEFAULT_VERSION = "12345";
+	public static final String DEFAULT_VERSION = "12345";
+	public static final String DEFAULT_NAME = "-";
 
 	public static SessionSpec sdp2SessionSpec(String sdp)
 			throws SdpException {
@@ -408,9 +409,9 @@ public class SdpConversor {
 
 		sb.append(SDPFieldNames.PROTO_VERSION_FIELD + DEFAULT_SDP_VERSION
 				+ ENDLINE);
-		sb.append(SDPFieldNames.ORIGIN_FIELD + "- " + spec.getId() + " "
-				+ DEFAULT_VERSION + " " + SDPKeywords.IN + " "
-				+ SDPKeywords.IPV4 + " " + address + ENDLINE);
+		sb.append(SDPFieldNames.ORIGIN_FIELD + DEFAULT_NAME + " "
+				+ spec.getId() + " " + DEFAULT_VERSION + " " + SDPKeywords.IN
+				+ " " + SDPKeywords.IPV4 + " " + address + ENDLINE);
 		sb.append(SDPFieldNames.SESSION_NAME_FIELD + ENDLINE);
 		sb.append(SDPFieldNames.CONNECTION_FIELD + SDPKeywords.IN + " "
 				+ SDPKeywords.IPV4 + " " + address + ENDLINE);
