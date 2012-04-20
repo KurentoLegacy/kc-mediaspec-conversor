@@ -34,6 +34,8 @@ public class SdpConversor {
 	private static final String DEFAULT_SDP_VERSION = "0";
 	public static final String DEFAULT_VERSION = "12345";
 	public static final String DEFAULT_NAME = "-";
+	private static final String DEFAULT_SESSION_NAME = "-"; // Needed for
+															// Linphone (e.g.)
 
 	public static SessionSpec sdp2SessionSpec(String sdp)
 			throws SdpException {
@@ -412,7 +414,8 @@ public class SdpConversor {
 		sb.append(SDPFieldNames.ORIGIN_FIELD + DEFAULT_NAME + " "
 				+ spec.getId() + " " + DEFAULT_VERSION + " " + SDPKeywords.IN
 				+ " " + SDPKeywords.IPV4 + " " + address + ENDLINE);
-		sb.append(SDPFieldNames.SESSION_NAME_FIELD + ENDLINE);
+		sb.append(SDPFieldNames.SESSION_NAME_FIELD + DEFAULT_SESSION_NAME
+				+ ENDLINE);
 		sb.append(SDPFieldNames.CONNECTION_FIELD + SDPKeywords.IN + " "
 				+ SDPKeywords.IPV4 + " " + address + ENDLINE);
 		sb.append(SDPFieldNames.TIME_FIELD + "0 0" + ENDLINE);
