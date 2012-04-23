@@ -13,7 +13,7 @@ public class SdpIntersectionTest extends TestCase {
 
 	private static String sdp3 = "v=0\r\n" +
 		"o=- 12345 12345 IN IP4 193.147.51.19\r\n" +
-		"s=\r\n" +
+		"s=-\r\n" +
 		"c=IN IP4 193.147.51.19\r\n" +
 		"t=0 0\r\n" +
 		"m=video 46250 RTP/AVP 96\r\n" +
@@ -23,7 +23,7 @@ public class SdpIntersectionTest extends TestCase {
 
 	private static String sdp4 = "v=0\r\n" +
 		"o=- 12345 12345 IN IP4 95.126.68.104\r\n" +
-		"s=\r\n" +
+		"s=-\r\n" +
 		"c=IN IP4 95.126.68.104\r\n" +
 		"t=0 0\r\n" +
 		"m=video 45716 RTP/AVP 96\r\n" +
@@ -33,7 +33,7 @@ public class SdpIntersectionTest extends TestCase {
 
 	private static String sdp1 = "v=0\r\n" +
 		"o=- 123 654321 IN IP4 193.147.51.18\r\n" +
-		"s=\r\n" +
+		"s=-\r\n" +
 		"c=IN IP4 193.147.51.18\r\n" +
 		"t=0 0\r\n" +
 		"m=video 2323 RTP/AVP 96\r\n" +
@@ -47,7 +47,7 @@ public class SdpIntersectionTest extends TestCase {
 	private static String generatedSdp1 = "v=0\r\n" +
 		"o=" + SdpConversor.DEFAULT_NAME + " 123 "
 			+ SdpConversor.DEFAULT_VERSION + " IN IP4 193.147.51.18\r\n" +
-		"s=\r\n" +
+		"s=-\r\n" +
 		"c=IN IP4 193.147.51.18\r\n" +
 		"t=0 0\r\n" +
 		"m=video 2323 RTP/AVP 96\r\n" +
@@ -60,7 +60,7 @@ public class SdpIntersectionTest extends TestCase {
 
 	private static String sdp2 = "v=0\r\n" +
 		"o=- 456 654321 IN IP4 193.147.51.44\r\n" +
-		"s=\r\n" +
+		"s=-\r\n" +
 		"c=IN IP4 193.147.51.44\r\n" +
 		"t=0 0\r\n" +
 		"m=video 3434 RTP/AVP 96\r\n" +
@@ -74,7 +74,7 @@ public class SdpIntersectionTest extends TestCase {
 	private static String generatedSdp2 = "v=0\r\n" +
 		"o=" + SdpConversor.DEFAULT_NAME + " 456 "
 			+ SdpConversor.DEFAULT_VERSION + " IN IP4 193.147.51.44\r\n" +
-		"s=\r\n" +
+		"s=-\r\n" +
 		"c=IN IP4 193.147.51.44\r\n" +
 		"t=0 0\r\n" +
 		"m=video 3434 RTP/AVP 96\r\n" +
@@ -88,7 +88,7 @@ public class SdpIntersectionTest extends TestCase {
 	private static String sdpIntersectLocal = "v=0\r\n" +
 		"o=" + SdpConversor.DEFAULT_NAME + " 456 "
 			+ SdpConversor.DEFAULT_VERSION + " IN IP4 193.147.51.18\r\n" +
-		"s=\r\n" +
+		"s=-\r\n" +
 		"c=IN IP4 193.147.51.18\r\n" +
 		"t=0 0\r\n" +
 		"m=video 2323 RTP/AVP 96\r\n" +
@@ -102,7 +102,7 @@ public class SdpIntersectionTest extends TestCase {
 	private static String sdpIntersectRemote = "v=0\r\n" +
 		"o=" + SdpConversor.DEFAULT_NAME + " 456 "
 			+ SdpConversor.DEFAULT_VERSION + " IN IP4 193.147.51.44\r\n" +
-		"s=\r\n" +
+		"s=-\r\n" +
 		"c=IN IP4 193.147.51.44\r\n" +
 		"t=0 0\r\n" +
 		"m=video 3434 RTP/AVP 96\r\n" +
