@@ -69,13 +69,13 @@ public class Thrift2MediaSpec {
 				rtp.setChannels(thriftRtp.getChannels());
 
 			if (thriftRtp.isSetWidth())
-				rtp.setChannels(thriftRtp.getWidth());
+				rtp.setWidth(thriftRtp.getWidth());
 
 			if (thriftRtp.isSetHeight())
-				rtp.setChannels(thriftRtp.getHeight());
+				rtp.setHeight(thriftRtp.getHeight());
 
 			if (thriftRtp.isSetBitrate())
-				rtp.setChannels(thriftRtp.getBitrate());
+				rtp.setBitrate(thriftRtp.getBitrate());
 
 			if (thriftRtp.isSetExtraParams()) {
 				Map<String, String> params = thriftRtp.getExtraParams();

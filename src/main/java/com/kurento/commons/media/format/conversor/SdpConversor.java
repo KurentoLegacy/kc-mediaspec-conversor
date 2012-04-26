@@ -455,12 +455,16 @@ public class SdpConversor {
 
 			try {
 				PayloadRtp rtp = payload.getRtp();
-				int rtpBitrate = rtp.getBitrate();
-				if (rtpBitrate != -1 && (rtpBitrate < bitRate || bitRate == -1)) {
-					bitRate = rtpBitrate;
-				}
 				sb.append(" ").append(rtp.getId());
 				payloadString.append(payloadRtp2Sdp(rtp));
+				try {
+					int rtpBitrate = rtp.getBitrate();
+					if (rtpBitrate != -1
+							&& (rtpBitrate < bitRate || bitRate == -1)) {
+						bitRate = rtpBitrate;
+					}
+				} catch (ArgumentNotSetException e) {
+				}
 			} catch (ArgumentNotSetException e1) {
 
 			}
