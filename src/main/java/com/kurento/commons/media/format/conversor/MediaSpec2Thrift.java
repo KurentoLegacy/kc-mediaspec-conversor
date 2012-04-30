@@ -93,6 +93,7 @@ public class MediaSpec2Thrift {
 			for (String key : keys) {
 				map.put(key, rtp.getParemeterValue(key));
 			}
+			tRtp.setExtraParams(map);
 
 			tPayload.setRtp(tRtp);
 		} catch (ArgumentNotSetException e) {
