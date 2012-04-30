@@ -22,7 +22,6 @@ class FormatParametersConversor {
 		if (rtp.getCodecName().equalsIgnoreCase("AMR")) {
 			int idx = value.indexOf(" ");
 			String paramsStr = value.substring(idx + 1);
-			System.out.println(">" + paramsStr + "<");
 			String[] params = paramsStr.split(",");
 			for (String param : params) {
 				String[] pk = param.split("=");
@@ -33,8 +32,6 @@ class FormatParametersConversor {
 					rtp.setParameterValue(pk[0], pk[1]);
 			}
 		}
-
-		System.out.println("fmtp: " + value);
 	}
 
 	protected static String getFormatParameters(PayloadRtp rtp) {
