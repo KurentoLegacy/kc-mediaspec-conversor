@@ -55,7 +55,7 @@ public class SdpIntersectionTest extends TestCase {
 		"a=sendonly\r\n" +
 		"m=audio 5555 RTP/AVP 100\r\n" +
 		"a=rtpmap:100 AMR/8000/1\r\n" +
-		// "a=FMTP:100 octet-align=1\r\n" +
+		"a=FMTP:100 octet-align=1\r\n" +
 		"a=sendonly\r\n";
 
 	private static String sdp2 = "v=0\r\n" +
@@ -82,7 +82,7 @@ public class SdpIntersectionTest extends TestCase {
 		"a=sendrecv\r\n" +
 		"m=audio 7777 RTP/AVP 100\r\n" +
 		"a=rtpmap:100 AMR/8000/1\r\n" +
-		// "a=FMTP:100 octet-align=1\r\n" +
+		"a=FMTP:100 octet-align=1\r\n" +
 		"a=sendonly\r\n";
 
 	private static String sdpIntersectLocal = "v=0\r\n" +
@@ -96,7 +96,7 @@ public class SdpIntersectionTest extends TestCase {
 		"a=sendonly\r\n" +
 		"m=audio 5555 RTP/AVP 100\r\n" +
 		"a=rtpmap:100 AMR/8000/1\r\n" +
-		//"a=FMTP:100 octet-align=1\r\n" + FIXME: No supported yet
+		"a=FMTP:100 octet-align=1\r\n" +
 		"a=inactive\r\n";
 
 	private static String sdpIntersectRemote = "v=0\r\n" +
@@ -110,7 +110,7 @@ public class SdpIntersectionTest extends TestCase {
 		"a=recvonly\r\n" +
 		"m=audio 7777 RTP/AVP 100\r\n" +
 		"a=rtpmap:100 AMR/8000/1\r\n" +
-		// "a=FMTP:100 octet-align=1\r\n" + FIXME: No supported yet
+		"a=FMTP:100 octet-align=1\r\n" +
 		"a=inactive\r\n";
 
 	public void testInit() {

@@ -113,7 +113,8 @@ public class SdpConversor {
 					payload = getPayloadById(payloads,
 							getPayloadIdFromString(field.getValue()));
 					if (payload != null) {
-						// TODO: Set format parameters
+						FormatParametersConversor.parseFormatParameters(payload,
+								field.getValue());
 					}
 				} else if (mode != null) {
 					mediaTypeMode = mode;
@@ -497,6 +498,9 @@ public class SdpConversor {
 		}
 
 		sb.append(ENDLINE);
+
+		String ftmp = FormatParametersConversor.getFormatParameters(payload);
+		sb.append(ftmp);
 
 		return sb.toString();
 	}
