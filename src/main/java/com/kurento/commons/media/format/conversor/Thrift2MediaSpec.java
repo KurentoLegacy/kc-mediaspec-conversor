@@ -30,6 +30,7 @@ import com.kurento.commons.media.format.enums.MediaType;
 import com.kurento.commons.media.format.enums.Mode;
 import com.kurento.commons.media.format.payload.Fraction;
 import com.kurento.commons.media.format.payload.PayloadRtp;
+import com.kurento.commons.media.format.transport.TransportRtmp;
 import com.kurento.commons.media.format.transport.TransportRtp;
 
 public class Thrift2MediaSpec {
@@ -123,6 +124,24 @@ public class Thrift2MediaSpec {
 					.getAddress(), thriftTransport.getRtp().getPort());
 			transport.setRtp(rtp);
 		}
+
+		if (thriftTransport.isSetRtmp()) {
+			com.kurento.commons.mediaspec.TransportRtmp thriftRtmp = thriftTransport
+					.getRtmp();
+			TransportRtmp rtmp = new TransportRtmp();
+
+			if (thriftRtmp.isSetUrl())
+				rtmp.setUrl(thriftRtmp.getUrl());
+
+			if (thriftRtmp.isSetPlay())
+				rtmp.setPlay(thriftRtmp.getPlay());
+
+			if (thriftRtmp.isSetPublish())
+				rtmp.setPublish(thriftRtmp.getPublish());
+
+			transport.setRtmp(rtmp);
+		}
+
 		return transport;
 	}
 }

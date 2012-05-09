@@ -31,6 +31,7 @@ import com.kurento.commons.mediaspec.Payload;
 import com.kurento.commons.mediaspec.PayloadRtp;
 import com.kurento.commons.mediaspec.SessionSpec;
 import com.kurento.commons.mediaspec.Transport;
+import com.kurento.commons.mediaspec.TransportRtmp;
 import com.kurento.commons.mediaspec.TransportRtp;
 
 public class MediaSpec2Thrift {
@@ -143,6 +144,27 @@ public class MediaSpec2Thrift {
 			TransportRtp trtp = new TransportRtp(rtp.getAddress(),
 					rtp.getPort());
 			tTransport.setRtp(trtp);
+		} catch (ArgumentNotSetException e) {
+		}
+
+		try {
+			com.kurento.commons.media.format.transport.TransportRtmp rtmp = transport
+					.getRtmp();
+
+			TransportRtmp trtmp = new TransportRtmp();
+			try {
+				trtmp.setUrl(rtmp.getUrl());
+			} catch (ArgumentNotSetException e) {
+			}
+			try {
+				trtmp.setPublish(rtmp.getPublish());
+			} catch (ArgumentNotSetException e) {
+			}
+			try {
+				trtmp.setPlay(rtmp.getPlay());
+			} catch (ArgumentNotSetException e) {
+			}
+			tTransport.setRtmp(trtmp);
 		} catch (ArgumentNotSetException e) {
 		}
 
