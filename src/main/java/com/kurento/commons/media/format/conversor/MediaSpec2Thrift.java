@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.kurento.commons.media.format.exceptions.ArgumentNotSetException;
+import com.kurento.commons.mediaspec.Fraction;
 import com.kurento.commons.mediaspec.MediaSpec;
 import com.kurento.commons.mediaspec.MediaType;
 import com.kurento.commons.mediaspec.Payload;
@@ -104,6 +105,11 @@ public class MediaSpec2Thrift {
 			} catch (ArgumentNotSetException e) {
 			}
 
+			try {
+				tRtp.setFramerate(fraction2Thrift(rtp.getFramerate()));
+			} catch (ArgumentNotSetException e) {
+			}
+
 			Set<String> keys = rtp.getParametersKeys();
 			HashMap<String, String> map = new HashMap<String, String>();
 
@@ -116,6 +122,15 @@ public class MediaSpec2Thrift {
 		} catch (ArgumentNotSetException e) {
 		}
 		return tPayload;
+	}
+
+	private static Fraction fraction2Thrift(
+			com.kurento.commons.media.format.payload.Fraction fraction) {
+		if (fraction == null)
+			return null;
+
+		Fraction ret = new Fraction(fraction.getNum(), fraction.getDenom());
+		return ret;
 	}
 
 	private static Transport transport2Thrift(

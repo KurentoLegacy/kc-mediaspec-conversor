@@ -28,6 +28,7 @@ import com.kurento.commons.media.format.SessionSpec;
 import com.kurento.commons.media.format.Transport;
 import com.kurento.commons.media.format.enums.MediaType;
 import com.kurento.commons.media.format.enums.Mode;
+import com.kurento.commons.media.format.payload.Fraction;
 import com.kurento.commons.media.format.payload.PayloadRtp;
 import com.kurento.commons.media.format.transport.TransportRtp;
 
@@ -94,6 +95,9 @@ public class Thrift2MediaSpec {
 			if (thriftRtp.isSetBitrate())
 				rtp.setBitrate(thriftRtp.getBitrate());
 
+			if (thriftRtp.isSetFramerate())
+				rtp.setFramerate(thrift2Fraction(thriftRtp.getFramerate()));
+
 			if (thriftRtp.isSetExtraParams()) {
 				Map<String, String> params = thriftRtp.getExtraParams();
 				for (String key : params.keySet()) {
@@ -104,6 +108,11 @@ public class Thrift2MediaSpec {
 			payload.setRtp(rtp);
 		}
 		return payload;
+	}
+
+	private static Fraction thrift2Fraction(
+			com.kurento.commons.mediaspec.Fraction thriftFraction) {
+		return new Fraction(thriftFraction.num, thriftFraction.denom);
 	}
 
 	private static Transport thrift2Transport(
