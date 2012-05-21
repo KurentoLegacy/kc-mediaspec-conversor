@@ -96,8 +96,12 @@ public class Thrift2MediaSpec {
 			if (thriftRtp.isSetBitrate())
 				rtp.setBitrate(thriftRtp.getBitrate());
 
-			if (thriftRtp.isSetFramerate())
-				rtp.setFramerate(thrift2Fraction(thriftRtp.getFramerate()));
+			if (thriftRtp.isSetFramerate()) {
+				try {
+					rtp.setFramerate(thrift2Fraction(thriftRtp.getFramerate()));
+				} catch (IllegalArgumentException ex) {
+				}
+			}
 
 			if (thriftRtp.isSetExtraParams()) {
 				Map<String, String> params = thriftRtp.getExtraParams();
