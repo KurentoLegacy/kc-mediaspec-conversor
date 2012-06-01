@@ -56,6 +56,8 @@ public class SdpConversor {
 
 	public static SessionSpec sdp2SessionSpec(String sdp)
 			throws SdpException {
+		if (sdp == null || sdp.equals(""))
+			return null;
 		return sdp2SessionSpec(SdpFactory.getInstance().createSessionDescription(sdp));
 	}
 
@@ -417,12 +419,17 @@ public class SdpConversor {
 
 	public static SessionDescription sessionSpec2SessionDescription(
 			SessionSpec spec) throws SdpException {
+		if (spec == null)
+			return null;
 		return SdpFactory.getInstance().createSessionDescription(
 				sessionSpec2Sdp(spec));
 	}
 
 	public static String sessionSpec2Sdp(SessionSpec spec)
 			throws SdpException {
+		if (spec == null)
+			return "";
+
 		StringBuilder sb = new StringBuilder();
 
 		String address = getAddress(spec);
