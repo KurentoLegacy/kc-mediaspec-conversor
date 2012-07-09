@@ -44,7 +44,7 @@ public class ThriftTest extends TestCase {
 			"a=sendrecv\r\n";
 
 	public void testInit() throws SdpException, TException {
-		com.kurento.commons.media.format.SessionSpec spec = SdpConversor
+		com.kurento.mediaspec.SessionSpec spec = SdpConversor
 				.sdp2SessionSpec(sdp);
 		SessionSpec tspec = MediaSpec2Thrift.sessionSpec2thrift(spec);
 		AutoExpandingBufferWriteTransport trans = new AutoExpandingBufferWriteTransport(

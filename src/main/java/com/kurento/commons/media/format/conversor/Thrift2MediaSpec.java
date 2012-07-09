@@ -22,16 +22,16 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import com.kurento.commons.media.format.MediaSpec;
-import com.kurento.commons.media.format.Payload;
-import com.kurento.commons.media.format.SessionSpec;
-import com.kurento.commons.media.format.Transport;
-import com.kurento.commons.media.format.enums.MediaType;
-import com.kurento.commons.media.format.enums.Mode;
-import com.kurento.commons.media.format.payload.Fraction;
-import com.kurento.commons.media.format.payload.PayloadRtp;
-import com.kurento.commons.media.format.transport.TransportRtmp;
-import com.kurento.commons.media.format.transport.TransportRtp;
+import com.kurento.mediaspec.Fraction;
+import com.kurento.mediaspec.MediaSpec;
+import com.kurento.mediaspec.MediaType;
+import com.kurento.mediaspec.Mode;
+import com.kurento.mediaspec.Payload;
+import com.kurento.mediaspec.PayloadRtp;
+import com.kurento.mediaspec.SessionSpec;
+import com.kurento.mediaspec.Transport;
+import com.kurento.mediaspec.TransportRtmp;
+import com.kurento.mediaspec.TransportRtp;
 
 public class Thrift2MediaSpec {
 

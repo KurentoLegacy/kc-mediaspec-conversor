@@ -25,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.kurento.commons.media.format.conversor.SdpConversor;
+import com.kurento.mediaspec.SessionSpec;
 
 public class Sdp2SessionSpecTest extends TestCase {
 

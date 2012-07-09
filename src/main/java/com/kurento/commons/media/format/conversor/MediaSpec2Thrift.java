@@ -23,7 +23,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.kurento.commons.media.format.exceptions.ArgumentNotSetException;
 import com.kurento.commons.mediaspec.Fraction;
 import com.kurento.commons.mediaspec.MediaSpec;
 import com.kurento.commons.mediaspec.MediaType;
@@ -33,14 +32,15 @@ import com.kurento.commons.mediaspec.SessionSpec;
 import com.kurento.commons.mediaspec.Transport;
 import com.kurento.commons.mediaspec.TransportRtmp;
 import com.kurento.commons.mediaspec.TransportRtp;
+import com.kurento.mediaspec.ArgumentNotSetException;
 
 public class MediaSpec2Thrift {
 
 	public static SessionSpec sessionSpec2thrift(
-			com.kurento.commons.media.format.SessionSpec spec) {
+			com.kurento.mediaspec.SessionSpec spec) {
 		List<MediaSpec> medias = new ArrayList<MediaSpec>();
 
-		for (com.kurento.commons.media.format.MediaSpec media : spec
+		for (com.kurento.mediaspec.MediaSpec media : spec
 				.getMediaSpecs()) {
 			MediaSpec tMedia = mediaSpec2Thrift(media);
 			medias.add(tMedia);
@@ -57,16 +57,16 @@ public class MediaSpec2Thrift {
 	}
 
 	private static MediaSpec mediaSpec2Thrift(
-			com.kurento.commons.media.format.MediaSpec media) {
+			com.kurento.mediaspec.MediaSpec media) {
 		List<Payload> payloads = new ArrayList<Payload>();
-		for (com.kurento.commons.media.format.Payload payload : media
+		for (com.kurento.mediaspec.Payload payload : media
 				.getPayloads()) {
 			Payload tPayload = payload2Thirft(payload);
 			payloads.add(tPayload);
 		}
 
 		Set<MediaType> types = new HashSet<MediaType>();
-		for (com.kurento.commons.media.format.enums.MediaType type : media
+		for (com.kurento.mediaspec.MediaType type : media
 				.getTypes()) {
 			types.add(MediaType.valueOf(type.toString().toUpperCase()));
 		}
@@ -79,10 +79,10 @@ public class MediaSpec2Thrift {
 	}
 
 	private static Payload payload2Thirft(
-			com.kurento.commons.media.format.Payload payload) {
+com.kurento.mediaspec.Payload payload) {
 		Payload tPayload = new Payload();
 		try {
-			com.kurento.commons.media.format.payload.PayloadRtp rtp = payload
+			com.kurento.mediaspec.PayloadRtp rtp = payload
 					.getRtp();
 			PayloadRtp tRtp = new PayloadRtp(rtp.getId(), rtp.getCodecName(),
 					rtp.getClockRate());
@@ -126,7 +126,7 @@ public class MediaSpec2Thrift {
 	}
 
 	private static Fraction fraction2Thrift(
-			com.kurento.commons.media.format.payload.Fraction fraction) {
+			com.kurento.mediaspec.Fraction fraction) {
 		if (fraction == null)
 			return null;
 
@@ -135,10 +135,10 @@ public class MediaSpec2Thrift {
 	}
 
 	private static Transport transport2Thrift(
-			com.kurento.commons.media.format.Transport transport) {
+			com.kurento.mediaspec.Transport transport) {
 		Transport tTransport = new Transport();
 		try {
-			com.kurento.commons.media.format.transport.TransportRtp rtp = transport
+			com.kurento.mediaspec.TransportRtp rtp = transport
 					.getRtp();
 
 			TransportRtp trtp = new TransportRtp(rtp.getAddress(),
@@ -148,7 +148,7 @@ public class MediaSpec2Thrift {
 		}
 
 		try {
-			com.kurento.commons.media.format.transport.TransportRtmp rtmp = transport
+			com.kurento.mediaspec.TransportRtmp rtmp = transport
 					.getRtmp();
 
 			TransportRtmp trtmp = new TransportRtmp();

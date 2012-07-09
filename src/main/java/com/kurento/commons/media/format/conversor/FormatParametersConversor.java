@@ -21,9 +21,9 @@ import gov.nist.javax.sdp.fields.SDPField;
 
 import javax.sdp.SdpConstants;
 
-import com.kurento.commons.media.format.Payload;
-import com.kurento.commons.media.format.exceptions.ArgumentNotSetException;
-import com.kurento.commons.media.format.payload.PayloadRtp;
+import com.kurento.mediaspec.ArgumentNotSetException;
+import com.kurento.mediaspec.Payload;
+import com.kurento.mediaspec.PayloadRtp;
 
 class FormatParametersConversor {
 
