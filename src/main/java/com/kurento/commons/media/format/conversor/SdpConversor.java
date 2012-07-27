@@ -35,10 +35,9 @@ import javax.sdp.SdpException;
 import javax.sdp.SdpFactory;
 import javax.sdp.SessionDescription;
 
-import com.kurento.mediaspec.ArgumentNotSetException;
+import com.kurento.mediaspec.Direction;
 import com.kurento.mediaspec.MediaSpec;
 import com.kurento.mediaspec.MediaType;
-import com.kurento.mediaspec.Mode;
 import com.kurento.mediaspec.Payload;
 import com.kurento.mediaspec.PayloadRtp;
 import com.kurento.mediaspec.SessionSpec;
@@ -89,7 +88,7 @@ public class SdpConversor {
 
 	private static MediaSpec sdp2MediaSpec(MediaDescription md,
 			SessionDescription sdp) throws SdpException {
-		Mode mediaTypeMode = null;
+		Direction mediaTypeMode = null;
 		Media media = md.getMedia();
 		if (media == null)
 			throw new SdpException("Media can not be null");
@@ -117,7 +116,12 @@ public class SdpConversor {
 			for (AttributeField field : atributeList) {
 				String name = field.getName();
 				Payload payload = null;
-				Mode mode = Mode.getInstance(name);
+				Direction mode;
+				try {
+					mode = Direction.valueOf(name.toUpperCase());
+				} catch (IllegalArgumentException ex) {
+					mode = null;
+				}
 				if (SdpConstants.RTPMAP.equalsIgnoreCase(name)) {
 					payload = getPayloadById(payloads,
 							getPayloadIdFromString(field.getValue()));
@@ -145,7 +149,7 @@ public class SdpConversor {
 		}
 
 		HashSet<MediaType> types = new HashSet<MediaType>();
-		types.add(MediaType.getInstance(media.getMediaType()));
+		types.add(MediaType.valueOf(media.getMediaType().toUpperCase()));
 
 		Transport transport = new Transport();
 		TransportRtp transportRtp = new TransportRtp(sdp.getConnection()
@@ -153,7 +157,7 @@ public class SdpConversor {
 		transport.setRtp(transportRtp);
 
 		if (mediaTypeMode == null)
-			mediaTypeMode = Mode.SENDRECV;
+			mediaTypeMode = Direction.SENDRECV;
 
 		MediaSpec ms = new MediaSpec(payloads, types, transport, mediaTypeMode);
 		return ms;
@@ -169,7 +173,8 @@ public class SdpConversor {
 		PayloadRtp rtp;
 		if (tokens.length <= 1) {
 			rtp = getDefaultRtpPayload(id,
-					MediaType.getInstance(md.getMedia().getMediaType()));
+					MediaType.valueOf(md.getMedia().getMediaType()
+							.toUpperCase()));
 		}else {
 			String[] values = tokens[1].split("/");
 			if (values.length != 2 && values.length != 3) {
@@ -190,11 +195,10 @@ public class SdpConversor {
 
 	private static Payload getPayloadById(List<Payload> payloads, int id) {
 		for (Payload payload : payloads) {
-			try {
+			if (payload.isSetRtp()) {
 				PayloadRtp rtp = payload.getRtp();
 				if (rtp.getId() == id)
 					return payload;
-			} catch (ArgumentNotSetException e) {
 			}
 		}
 
@@ -445,7 +449,7 @@ public class SdpConversor {
 				+ SDPKeywords.IPV4 + " " + address + ENDLINE);
 		sb.append(SDPFieldNames.TIME_FIELD + "0 0" + ENDLINE);
 
-		for (MediaSpec media : spec.getMediaSpecs()) {
+		for (MediaSpec media : spec.getMedias()) {
 			sb.append(mediaSpec2Sdp(media));
 		}
 
@@ -454,19 +458,19 @@ public class SdpConversor {
 
 	private static String mediaSpec2Sdp(MediaSpec media) {
 		StringBuilder sb = new StringBuilder();
-		Set<MediaType> types = media.getTypes();
+		Set<MediaType> types = media.getType();
 		TransportRtp transport;
-		try {
-			transport = media.getTransport().getRtp();
-		} catch (ArgumentNotSetException e1) {
+		if (!media.getTransport().isSetRtp())
 			return "";
-		}
+
+		transport = media.getTransport().getRtp();
 
 		if (types.size() != 1) {
 			return "";
 		}
 
-		sb.append(SDPFieldNames.MEDIA_FIELD + types.iterator().next() + " ");
+		sb.append(SDPFieldNames.MEDIA_FIELD
+				+ types.iterator().next().toString().toLowerCase() + " ");
 		if (media.getPayloads().size() == 0)
 			sb.append(0);
 		else
@@ -478,20 +482,17 @@ public class SdpConversor {
 
 		for (Payload payload : media.getPayloads()) {
 
-			try {
+			if (payload.isSetRtp()) {
 				PayloadRtp rtp = payload.getRtp();
 				sb.append(" ").append(rtp.getId());
 				payloadString.append(payloadRtp2Sdp(rtp));
-				try {
+				if (rtp.isSetBitrate()) {
 					int rtpBitrate = rtp.getBitrate();
 					if (rtpBitrate != -1
 							&& (rtpBitrate < bitRate || bitRate == -1)) {
 						bitRate = rtpBitrate;
 					}
-				} catch (ArgumentNotSetException e) {
 				}
-			} catch (ArgumentNotSetException e1) {
-
 			}
 		}
 		sb.append(ENDLINE);
@@ -499,9 +500,9 @@ public class SdpConversor {
 
 		sb.append(SDPFieldNames.ATTRIBUTE_FIELD);
 		if (media.getPayloads().size() == 0)
-			sb.append(Mode.INACTIVE);
+			sb.append(Direction.INACTIVE.toString().toLowerCase());
 		else
-			sb.append(media.getMode());
+			sb.append(media.getDirection().toString().toLowerCase());
 		sb.append(ENDLINE);
 		if (bitRate > 0)
 			sb.append(SDPFieldNames.BANDWIDTH_FIELD + BandWidth.AS + ":"
@@ -516,9 +517,8 @@ public class SdpConversor {
 		sb.append(SDPFieldNames.ATTRIBUTE_FIELD + SdpConstants.RTPMAP + ":"
 				+ payload.getId() + " " + payload.getCodecName() + "/"
 				+ payload.getClockRate());
-		try {
+		if (payload.isSetChannels()) {
 			sb.append("/" + payload.getChannels());
-		} catch (ArgumentNotSetException e) {
 		}
 
 		sb.append(ENDLINE);
@@ -531,13 +531,12 @@ public class SdpConversor {
 
 	private static String getAddress(SessionSpec spec) throws SdpException {
 		String address = null;
-		for (MediaSpec media : spec.getMediaSpecs()) {
+		for (MediaSpec media : spec.getMedias()) {
 			TransportRtp tr = null;
-			try {
-				tr = media.getTransport().getRtp();
-			} catch (ArgumentNotSetException e) {
+			if (!media.getTransport().isSetRtp())
 				continue;
-			}
+
+			tr = media.getTransport().getRtp();
 
 			if (address == null)
 				address = tr.getAddress();

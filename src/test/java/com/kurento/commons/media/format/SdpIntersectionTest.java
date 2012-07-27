@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 
 import com.kurento.commons.media.format.conversor.SdpConversor;
 import com.kurento.mediaspec.SessionSpec;
+import com.kurento.mediaspec.SessionSpecUtils;
 
 public class SdpIntersectionTest extends TestCase {
 
@@ -150,7 +151,8 @@ public class SdpIntersectionTest extends TestCase {
 			assertEquals(generatedSdp2, SdpConversor.sessionSpec2Sdp(spec2));
 			log.info("---------------------------");
 
-			SessionSpec[] intersection = SessionSpec.intersect(spec1, spec2);
+			SessionSpec[] intersection = SessionSpecUtils.intersect(spec1,
+					spec2);
 
 			log.info("---------------------------");
 			log.info("Spected local spec:\n" + sdpIntersectLocal);

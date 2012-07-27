@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 
 import com.kurento.commons.media.format.conversor.SdpConversor;
 import com.kurento.mediaspec.SessionSpec;
+import com.kurento.mediaspec.SessionSpecUtils;
 
 public class Sdp2SessionSpecTest extends TestCase {
 
@@ -91,7 +92,7 @@ public class Sdp2SessionSpecTest extends TestCase {
 
 			SessionSpec spec0 = SdpConversor.sdp2SessionSpec(sdp2);
 			SessionSpec spec1 = spec;
-			SessionSpec[] merge = SessionSpec.intersect(spec0, spec1);
+			SessionSpec[] merge = SessionSpecUtils.intersect(spec0, spec1);
 			log.info("Session0:\n" + spec0);
 			log.info("Session1:\n" + spec1 + "\n\n");
 

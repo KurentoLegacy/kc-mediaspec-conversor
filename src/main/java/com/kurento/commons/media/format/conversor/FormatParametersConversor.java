@@ -21,7 +21,6 @@ import gov.nist.javax.sdp.fields.SDPField;
 
 import javax.sdp.SdpConstants;
 
-import com.kurento.mediaspec.ArgumentNotSetException;
 import com.kurento.mediaspec.Payload;
 import com.kurento.mediaspec.PayloadRtp;
 
@@ -30,11 +29,10 @@ class FormatParametersConversor {
 	protected static void parseFormatParameters(Payload payload, String value) {
 		PayloadRtp rtp;
 
-		try {
-			rtp = payload.getRtp();
-		} catch (ArgumentNotSetException ex) {
+		if (!payload.isSetRtp())
 			return;
-		}
+
+		rtp = payload.getRtp();
 
 		if (rtp.getCodecName().equalsIgnoreCase("AMR")) {
 			int idx = value.indexOf(" ");
@@ -45,8 +43,9 @@ class FormatParametersConversor {
 				if (pk.length != 2) {
 					continue;
 				}
-				if (pk[0].equalsIgnoreCase("octet-align"))
-					rtp.setParameterValue(pk[0], pk[1]);
+				if (pk[0].equalsIgnoreCase("octet-align")) {
+					rtp.putToExtraParams(pk[0], pk[1]);
+				}
 			}
 		}
 	}
@@ -55,9 +54,11 @@ class FormatParametersConversor {
 		StringBuilder sb = new StringBuilder();
 
 		if (rtp.getCodecName().equalsIgnoreCase("AMR")) {
-			String value = rtp.getParemeterValue("octet-align");
-			if (value != null)
-				sb.append("octet-align=" + value);
+			if (rtp.isSetExtraParams()) {
+				String value = rtp.getExtraParams().get("octet-align");
+				if (value != null)
+					sb.append("octet-align=" + value);
+			}
 		}
 
 		if (sb.length() != 0)
