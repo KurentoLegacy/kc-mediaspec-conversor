@@ -139,6 +139,14 @@ public class SdpConversor {
 						FormatParametersConversor.parseFormatParameters(payload,
 								field.getValue());
 					}
+				} else if (FormatParametersConversor.EXTRA_ATTRIBUTES
+						.equalsIgnoreCase(name)) {
+					payload = getPayloadById(payloads,
+							getPayloadIdFromString(field.getValue()));
+					if (payload != null) {
+						FormatParametersConversor.parseExtraAttributes(
+								payload, field.getValue());
+					}
 				} else if (mode != null) {
 					mediaTypeMode = mode;
 					// } else {
@@ -527,6 +535,10 @@ public class SdpConversor {
 
 		String ftmp = FormatParametersConversor.getFormatParameters(payload);
 		sb.append(ftmp);
+
+		String extraAttr = FormatParametersConversor
+				.getExtraAttributes(payload);
+		sb.append(extraAttr);
 
 		return sb.toString();
 	}
