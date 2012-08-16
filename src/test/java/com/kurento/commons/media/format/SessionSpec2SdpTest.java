@@ -46,12 +46,16 @@ public class SessionSpec2SdpTest extends TestCase {
 	public void test1() throws SdpException {
 		log.debug("--------------------------- init test1 ---------------------------");
 
-		String sdpExpected = "v=0\r\n" + "o=- 1234 12345 IN IP4 localhost\r\n"
-				+ "s=-\r\n" + "c=IN IP4 localhost\r\n" + "t=0 0\r\n"
-				+ "m=video 2323 RTP/AVP 96\r\n"
-				+ "a=rtpmap:96 MP4V-ES/90000\r\n"
-				+ "a=extra-attr:96 w=352;h=288;fr=15/1\r\n" + "a=sendrecv\r\n"
-				+ "b=AS:384\r\n";
+		String sdpExpected = "v=0\r\n" +
+							"o=- 1234 12345 IN IP4 localhost\r\n" +
+							"s=-\r\n" +
+							"c=IN IP4 localhost\r\n" +
+							"t=0 0\r\n" +
+							"m=video 2323 RTP/AVP 96\r\n" +
+							"a=rtpmap:96 MP4V-ES/90000\r\n" +
+							"a=extra-attr:96 w=352;h=288;fr=15/1\r\n" +
+							"a=sendrecv\r\n" +
+							"b=AS:384\r\n";
 
 		List<MediaSpec> medias = new ArrayList<MediaSpec>();
 
@@ -94,12 +98,16 @@ public class SessionSpec2SdpTest extends TestCase {
 	public void test2() throws SdpException {
 		log.debug("--------------------------- init test2 ---------------------------");
 
-		String sdpExpected = "v=0\r\n" + "o=- 1234 12345 IN IP4 localhost\r\n"
-				+ "s=-\r\n" + "c=IN IP4 localhost\r\n" + "t=0 0\r\n"
-				+ "m=video 2323 RTP/AVP 96\r\n"
-				+ "a=rtpmap:96 MP4V-ES/90000\r\n"
-				+ "a=extra-attr:96 w=352;h=288\r\n" + "a=sendrecv\r\n"
-				+ "b=AS:384\r\n";
+		String sdpExpected = "v=0\r\n" +
+							"o=- 1234 12345 IN IP4 localhost\r\n" +
+							"s=-\r\n" +
+							"c=IN IP4 localhost\r\n" +
+							"t=0 0\r\n" +
+							"m=video 2323 RTP/AVP 96\r\n" +
+							"a=rtpmap:96 MP4V-ES/90000\r\n" +
+							"a=extra-attr:96 w=352;h=288\r\n" +
+							"a=sendrecv\r\n" +
+							"b=AS:384\r\n";
 
 		List<MediaSpec> medias = new ArrayList<MediaSpec>();
 
@@ -141,13 +149,19 @@ public class SessionSpec2SdpTest extends TestCase {
 	public void test3() throws SdpException {
 		log.debug("--------------------------- init test3 ---------------------------");
 
-		String sdpExpected = "v=0\r\n" + "o=- 1234 12345 IN IP4 localhost\r\n"
-				+ "s=-\r\n" + "c=IN IP4 localhost\r\n" + "t=0 0\r\n"
-				+ "m=video 2323 RTP/AVP 96\r\n"
-				+ "a=rtpmap:96 MP4V-ES/90000\r\n" + "a=sendrecv\r\n"
-				+ "m=audio 3434 RTP/AVP 14 97\r\n"
-				+ "a=rtpmap:14 MPA/90000\r\n" + "a=rtpmap:97 AMR/8000\r\n"
-				+ "a=FMTP:97 octet-align=1\r\n" + "a=sendrecv\r\n";
+		String sdpExpected =  "v=0\r\n" +
+							"o=- 1234 12345 IN IP4 localhost\r\n" +
+							"s=-\r\n" +
+							"c=IN IP4 localhost\r\n" +
+							"t=0 0\r\n" +
+							"m=video 2323 RTP/AVP 96\r\n" +
+							"a=rtpmap:96 MP4V-ES/90000\r\n" +
+							"a=sendrecv\r\n" +
+							"m=audio 3434 RTP/AVP 14 97\r\n" +
+							"a=rtpmap:14 MPA/90000\r\n" +
+							"a=rtpmap:97 AMR/8000\r\n" +
+							"a=FMTP:97 octet-align=1\r\n" +
+							"a=sendrecv\r\n";
 
 		List<MediaSpec> medias = new ArrayList<MediaSpec>();
 
