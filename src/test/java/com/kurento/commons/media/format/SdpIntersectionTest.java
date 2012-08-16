@@ -174,4 +174,303 @@ public class SdpIntersectionTest extends TestCase {
 		}
 	}
 
+	public void testExtraAttr1() throws Exception {
+		String sdp1 = "v=0\r\n" +
+					"o=- 1234 12345 IN IP4 localhost\r\n" +
+					"s=-\r\n" +
+					"c=IN IP4 localhost\r\n" +
+					"t=0 0\r\n" +
+					"m=video 2323 RTP/AVP 96\r\n" +
+					"a=rtpmap:96 MP4V-ES/90000\r\n" +
+					"a=extra-attr:96 w=352;h=288;fr=15/1\r\n" +
+					"a=sendrecv\r\n" +
+					"b=AS:384\r\n";
+
+		String sdp2 = "v=0\r\n" +
+					"o=- 1234 12345 IN IP4 localhost\r\n" +
+					"s=-\r\n" +
+					"c=IN IP4 localhost\r\n" +
+					"t=0 0\r\n" +
+					"m=video 2323 RTP/AVP 96\r\n" +
+					"a=rtpmap:96 MP4V-ES/90000\r\n" +
+					"a=extra-attr:96 w=640;h=480;fr=10/1\r\n" +
+					"a=sendrecv\r\n" +
+					"b=AS:500\r\n";
+
+		String sdpExpected = "v=0\r\n" +
+							"o=- 1234 12345 IN IP4 localhost\r\n" +
+							"s=-\r\n" +
+							"c=IN IP4 localhost\r\n" +
+							"t=0 0\r\n" +
+							"m=video 2323 RTP/AVP 96\r\n" +
+							"a=rtpmap:96 MP4V-ES/90000\r\n" +
+							"a=extra-attr:96 w=352;h=288;fr=10/1\r\n" +
+							"a=sendrecv\r\n" +
+							"b=AS:384\r\n";
+
+		SessionSpec spec1 = SdpConversor.sdp2SessionSpec(sdp1);
+		SessionSpec spec2 = SdpConversor.sdp2SessionSpec(sdp2);
+
+		SessionSpec[] intersection = SessionSpecUtils.intersect(spec1, spec2);
+
+		log.info("---------------------------");
+		log.info("Intersect local SDP:\n"
+				+ SdpConversor.sessionSpec2Sdp(intersection[0]));
+		assertEquals(sdpExpected, SdpConversor.sessionSpec2Sdp(intersection[0]));
+
+		log.info("Intersect remote SDP:\n"
+				+ SdpConversor.sessionSpec2Sdp(intersection[1]));
+		assertEquals(sdpExpected, SdpConversor.sessionSpec2Sdp(intersection[1]));
+		log.info("---------------------------");
+	}
+
+	public void testExtraAttr2() throws Exception {
+		String sdp1 = "v=0\r\n" +
+					"o=- 1234 12345 IN IP4 localhost\r\n" +
+					"s=-\r\n" +
+					"c=IN IP4 localhost\r\n" +
+					"t=0 0\r\n" +
+					"m=video 2323 RTP/AVP 96\r\n" +
+					"a=rtpmap:96 MP4V-ES/90000\r\n" +
+					"a=sendrecv\r\n" +
+					"b=AS:384\r\n";
+
+		String sdp2 = "v=0\r\n" +
+					"o=- 1234 12345 IN IP4 localhost\r\n" +
+					"s=-\r\n" +
+					"c=IN IP4 localhost\r\n" +
+					"t=0 0\r\n" +
+					"m=video 2323 RTP/AVP 96\r\n" +
+					"a=rtpmap:96 MP4V-ES/90000\r\n" +
+					"a=extra-attr:96 w=640;h=480;fr=10/1\r\n" +
+					"a=sendrecv\r\n" +
+					"b=AS:500\r\n";
+
+		String sdpExpected = "v=0\r\n" +
+							"o=- 1234 12345 IN IP4 localhost\r\n" +
+							"s=-\r\n" +
+							"c=IN IP4 localhost\r\n" +
+							"t=0 0\r\n" +
+							"m=video 2323 RTP/AVP 96\r\n" +
+							"a=rtpmap:96 MP4V-ES/90000\r\n" +
+							"a=extra-attr:96 w=640;h=480;fr=10/1\r\n" +
+							"a=sendrecv\r\n" +
+							"b=AS:384\r\n";
+
+		SessionSpec spec1 = SdpConversor.sdp2SessionSpec(sdp1);
+		SessionSpec spec2 = SdpConversor.sdp2SessionSpec(sdp2);
+
+		SessionSpec[] intersection = SessionSpecUtils.intersect(spec1, spec2);
+
+		log.info("---------------------------");
+		log.info("Intersect local SDP:\n"
+				+ SdpConversor.sessionSpec2Sdp(intersection[0]));
+		assertEquals(sdpExpected, SdpConversor.sessionSpec2Sdp(intersection[0]));
+
+		log.info("Intersect remote SDP:\n"
+				+ SdpConversor.sessionSpec2Sdp(intersection[1]));
+		assertEquals(sdpExpected, SdpConversor.sessionSpec2Sdp(intersection[1]));
+		log.info("---------------------------");
+	}
+
+	public void testExtraAttr3() throws Exception {
+		String sdp1 = "v=0\r\n" +
+					"o=- 1234 12345 IN IP4 localhost\r\n" +
+					"s=-\r\n" +
+					"c=IN IP4 localhost\r\n" +
+					"t=0 0\r\n" +
+					"m=video 2323 RTP/AVP 96\r\n" +
+					"a=rtpmap:96 MP4V-ES/90000\r\n" +
+					"a=extra-attr:96 w=352;fr=15/1\r\n" +
+					"a=sendrecv\r\n" +
+					"b=AS:384\r\n";
+
+		String sdp2 = "v=0\r\n" +
+					"o=- 1234 12345 IN IP4 localhost\r\n" +
+					"s=-\r\n" +
+					"c=IN IP4 localhost\r\n" +
+					"t=0 0\r\n" +
+					"m=video 2323 RTP/AVP 96\r\n" +
+					"a=rtpmap:96 MP4V-ES/90000\r\n" +
+					"a=extra-attr:96 w=640;h=480;fr=10/1\r\n" +
+					"a=sendrecv\r\n" +
+					"b=AS:500\r\n";
+
+		String sdpExpected = "v=0\r\n" +
+							"o=- 1234 12345 IN IP4 localhost\r\n" +
+							"s=-\r\n" +
+							"c=IN IP4 localhost\r\n" +
+							"t=0 0\r\n" +
+							"m=video 2323 RTP/AVP 96\r\n" +
+							"a=rtpmap:96 MP4V-ES/90000\r\n" +
+							"a=extra-attr:96 w=352;h=480;fr=10/1\r\n" +
+							"a=sendrecv\r\n" +
+							"b=AS:384\r\n";
+
+		SessionSpec spec1 = SdpConversor.sdp2SessionSpec(sdp1);
+		SessionSpec spec2 = SdpConversor.sdp2SessionSpec(sdp2);
+
+		SessionSpec[] intersection = SessionSpecUtils.intersect(spec1, spec2);
+
+		log.info("---------------------------");
+		log.info("Intersect local SDP:\n"
+				+ SdpConversor.sessionSpec2Sdp(intersection[0]));
+		assertEquals(sdpExpected, SdpConversor.sessionSpec2Sdp(intersection[0]));
+
+		log.info("Intersect remote SDP:\n"
+				+ SdpConversor.sessionSpec2Sdp(intersection[1]));
+		assertEquals(sdpExpected, SdpConversor.sessionSpec2Sdp(intersection[1]));
+		log.info("---------------------------");
+	}
+
+	public void testExtraAttr4() throws Exception {
+		String sdp1 = "v=0\r\n" +
+					"o=- 1234 12345 IN IP4 localhost\r\n" +
+					"s=-\r\n" +
+					"c=IN IP4 localhost\r\n" +
+					"t=0 0\r\n" +
+					"m=video 2323 RTP/AVP 96\r\n" +
+					"a=rtpmap:96 MP4V-ES/90000\r\n" +
+					"a=extra-attr:96 h=288;fr=15/1\r\n" +
+					"a=sendrecv\r\n" +
+					"b=AS:384\r\n";
+
+		String sdp2 = "v=0\r\n" +
+					"o=- 1234 12345 IN IP4 localhost\r\n" +
+					"s=-\r\n" +
+					"c=IN IP4 localhost\r\n" +
+					"t=0 0\r\n" +
+					"m=video 2323 RTP/AVP 96\r\n" +
+					"a=rtpmap:96 MP4V-ES/90000\r\n" +
+					"a=extra-attr:96 w=640;h=480;fr=10/1\r\n" +
+					"a=sendrecv\r\n" +
+					"b=AS:500\r\n";
+
+		String sdpExpected = "v=0\r\n" +
+							"o=- 1234 12345 IN IP4 localhost\r\n" +
+							"s=-\r\n" +
+							"c=IN IP4 localhost\r\n" +
+							"t=0 0\r\n" +
+							"m=video 2323 RTP/AVP 96\r\n" +
+							"a=rtpmap:96 MP4V-ES/90000\r\n" +
+							"a=extra-attr:96 w=640;h=288;fr=10/1\r\n" +
+							"a=sendrecv\r\n" +
+							"b=AS:384\r\n";
+
+		SessionSpec spec1 = SdpConversor.sdp2SessionSpec(sdp1);
+		SessionSpec spec2 = SdpConversor.sdp2SessionSpec(sdp2);
+
+		SessionSpec[] intersection = SessionSpecUtils.intersect(spec1, spec2);
+
+		log.info("---------------------------");
+		log.info("Intersect local SDP:\n"
+				+ SdpConversor.sessionSpec2Sdp(intersection[0]));
+		assertEquals(sdpExpected, SdpConversor.sessionSpec2Sdp(intersection[0]));
+
+		log.info("Intersect remote SDP:\n"
+				+ SdpConversor.sessionSpec2Sdp(intersection[1]));
+		assertEquals(sdpExpected, SdpConversor.sessionSpec2Sdp(intersection[1]));
+		log.info("---------------------------");
+	}
+
+	public void testExtraAttr5() throws Exception {
+		String sdp1 = "v=0\r\n" +
+					"o=- 1234 12345 IN IP4 localhost\r\n" +
+					"s=-\r\n" +
+					"c=IN IP4 localhost\r\n" +
+					"t=0 0\r\n" +
+					"m=video 2323 RTP/AVP 96\r\n" +
+					"a=rtpmap:96 MP4V-ES/90000\r\n" +
+					"a=extra-attr:96 h=288;fr=15/1\r\n" +
+					"a=sendrecv\r\n" +
+					"b=AS:384\r\n";
+
+		String sdp2 = "v=0\r\n" +
+					"o=- 1234 12345 IN IP4 localhost\r\n" +
+					"s=-\r\n" +
+					"c=IN IP4 localhost\r\n" +
+					"t=0 0\r\n" +
+					"m=video 2323 RTP/AVP 96\r\n" +
+					"a=rtpmap:96 MP4V-ES/90000\r\n" +
+					"a=extra-attr:96 ;h=480;fr=10/1\r\n" +
+					"a=sendrecv\r\n" +
+					"b=AS:500\r\n";
+
+		String sdpExpected = "v=0\r\n" +
+							"o=- 1234 12345 IN IP4 localhost\r\n" +
+							"s=-\r\n" +
+							"c=IN IP4 localhost\r\n" +
+							"t=0 0\r\n" +
+							"m=video 2323 RTP/AVP 96\r\n" +
+							"a=rtpmap:96 MP4V-ES/90000\r\n" +
+							"a=extra-attr:96 h=288;fr=10/1\r\n" +
+							"a=sendrecv\r\n" +
+							"b=AS:384\r\n";
+
+		SessionSpec spec1 = SdpConversor.sdp2SessionSpec(sdp1);
+		SessionSpec spec2 = SdpConversor.sdp2SessionSpec(sdp2);
+
+		SessionSpec[] intersection = SessionSpecUtils.intersect(spec1, spec2);
+
+		log.info("---------------------------");
+		log.info("Intersect local SDP:\n"
+				+ SdpConversor.sessionSpec2Sdp(intersection[0]));
+		assertEquals(sdpExpected, SdpConversor.sessionSpec2Sdp(intersection[0]));
+
+		log.info("Intersect remote SDP:\n"
+				+ SdpConversor.sessionSpec2Sdp(intersection[1]));
+		assertEquals(sdpExpected, SdpConversor.sessionSpec2Sdp(intersection[1]));
+		log.info("---------------------------");
+	}
+
+	public void testExtraAttr6() throws Exception {
+		String sdp1 = "v=0\r\n" +
+					"o=- 1234 12345 IN IP4 localhost\r\n" +
+					"s=-\r\n" +
+					"c=IN IP4 localhost\r\n" +
+					"t=0 0\r\n" +
+					"m=video 2323 RTP/AVP 96\r\n" +
+					"a=rtpmap:96 MP4V-ES/90000\r\n" +
+					"a=extra-attr:96 h=288;fr=15/1\r\n" +
+					"a=sendrecv\r\n" +
+					"b=AS:384\r\n";
+
+		String sdp2 = "v=0\r\n" +
+					"o=- 1234 12345 IN IP4 localhost\r\n" +
+					"s=-\r\n" +
+					"c=IN IP4 localhost\r\n" +
+					"t=0 0\r\n" +
+					"m=video 2323 RTP/AVP 96\r\n" +
+					"a=rtpmap:96 MP4V-ES/90000\r\n" +
+					"a=extra-attr:96 ;h=480\r\n" +
+					"a=sendrecv\r\n" +
+					"b=AS:500\r\n";
+
+		String sdpExpected = "v=0\r\n" +
+							"o=- 1234 12345 IN IP4 localhost\r\n" +
+							"s=-\r\n" +
+							"c=IN IP4 localhost\r\n" +
+							"t=0 0\r\n" +
+							"m=video 2323 RTP/AVP 96\r\n" +
+							"a=rtpmap:96 MP4V-ES/90000\r\n" +
+							"a=extra-attr:96 h=288;fr=15/1\r\n" +
+							"a=sendrecv\r\n" +
+							"b=AS:384\r\n";
+
+		SessionSpec spec1 = SdpConversor.sdp2SessionSpec(sdp1);
+		SessionSpec spec2 = SdpConversor.sdp2SessionSpec(sdp2);
+
+		SessionSpec[] intersection = SessionSpecUtils.intersect(spec1, spec2);
+
+		log.info("---------------------------");
+		log.info("Intersect local SDP:\n"
+				+ SdpConversor.sessionSpec2Sdp(intersection[0]));
+		assertEquals(sdpExpected, SdpConversor.sessionSpec2Sdp(intersection[0]));
+
+		log.info("Intersect remote SDP:\n"
+				+ SdpConversor.sessionSpec2Sdp(intersection[1]));
+		assertEquals(sdpExpected, SdpConversor.sessionSpec2Sdp(intersection[1]));
+		log.info("---------------------------");
+	}
+
 }
