@@ -187,7 +187,9 @@ public class SdpConversor {
 			if (values.length == 3)
 				rtp.setChannels(Integer.parseInt(values[2]));
 		}
-		rtp.setBitrate(md.getBandwidth(BandWidth.AS));
+		int bitrate = md.getBandwidth(BandWidth.AS);
+		if (bitrate > 0)
+			rtp.setBitrate(bitrate);
 
 		payload.setRtp(rtp);
 		return payload;
