@@ -163,7 +163,7 @@ public class Sdp2SessionSpecTest extends TestCase {
 			assertEquals(SdpParseException.class, t.getClass());
 			o = assertObject;
 		}
-		assertEquals(assertObject, o);
+		assertEquals(null, o);
 
 		log.debug("--------------------------- finish testProcessPayloadWrong ---------------------------");
 	}
