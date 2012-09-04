@@ -74,6 +74,21 @@ public class Sdp2SessionSpecTest extends TestCase {
 			"a=rtpmap:98 H263-1998/90000\r\n" +
 			"a=fmtp:98 CIF=1;QCIF=1\r\n";
 
+	private static String sdp4 = "v=0\r\n" +
+			"o=jdoe 2890844526 2890842807 IN IP4 10.0.1.1\r\n" +
+			"s=\r\n" +
+			"c=IN IP4 192.0.2.3\r\n" +
+			"t=0 0\r\n" +
+			"a=ice-pwd:asd88fgpdd777uzjYhagZg\r\n" +
+			"a=ice-ufrag:8hhY\r\n" +
+			"m=audio 45664 RTP/AVP 0\r\n" +
+			"b=RS:0\r\n" +
+			"b=RR:0\r\n" +
+			"a=rtpmap:0 PCMU/8000\r\n" +
+			"a=candidate:1 1 UDP 2130706431 10.0.1.1 8998 typ host\r\n" +
+			"a=candidate:2 1 UDP 1694498815 192.0.2.3 45664 typ srflx " +
+			"raddr 10.0.1.1 rport 8998\r\n";
+
 	public void testInit() {
 		try {
 			SessionSpec spec = SdpConversor.sdp2SessionSpec(sdp);
@@ -113,6 +128,11 @@ public class Sdp2SessionSpecTest extends TestCase {
 			} catch (SdpException e) {
 				log.info("Merge1SDP:\nerror");
 			}
+
+			spec = SdpConversor.sdp2SessionSpec(sdp4);
+			log.info("Sdp:\n" + sdp4);
+			log.info("SessionSpec:\n" + spec);
+			log.info("Generated:\n" + SdpConversor.sessionSpec2Sdp(spec));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

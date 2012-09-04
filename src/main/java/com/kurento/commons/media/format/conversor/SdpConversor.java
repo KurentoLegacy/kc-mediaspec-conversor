@@ -35,6 +35,9 @@ import javax.sdp.SdpException;
 import javax.sdp.SdpFactory;
 import javax.sdp.SessionDescription;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.kurento.mediaspec.Direction;
 import com.kurento.mediaspec.MediaSpec;
 import com.kurento.mediaspec.MediaType;
@@ -42,9 +45,18 @@ import com.kurento.mediaspec.Payload;
 import com.kurento.mediaspec.PayloadRtp;
 import com.kurento.mediaspec.SessionSpec;
 import com.kurento.mediaspec.Transport;
+import com.kurento.mediaspec.TransportIce;
+import com.kurento.mediaspec.TransportIceCandidate;
+import com.kurento.mediaspec.TransportIceCandidateTransport;
+import com.kurento.mediaspec.TransportIceCandidateTransportUtils;
+import com.kurento.mediaspec.TransportIceCandidateType;
+import com.kurento.mediaspec.TransportIceCandidateTypeUtils;
 import com.kurento.mediaspec.TransportRtp;
 
 public class SdpConversor {
+
+	private static final Logger log = LoggerFactory
+			.getLogger(SdpConversor.class);
 
 	private static final String ENDLINE = "\r\n";
 	private static final String DEFAULT_SDP_VERSION = "0";
@@ -52,6 +64,11 @@ public class SdpConversor {
 	public static final String DEFAULT_NAME = "-";
 	private static final String DEFAULT_SESSION_NAME = "-"; // Needed for
 															// Linphone (e.g.)
+
+	private static final int FOUNDATION_MAX_LEN = 32;
+	private static final String ICE_PWD = "ice-pwd";
+	private static final String ICE_UFRAG = "ice-ufrag";
+	private static final String ICE_CANDIDATE = "candidate";
 
 	public static SessionSpec sdp2SessionSpec(String sdp)
 			throws SdpException {
@@ -69,6 +86,23 @@ public class SdpConversor {
 		if (sdpMedias == null)
 			throw new SdpException("No medias found");
 		int bandWidth = sdp.getBandwidth(BandWidth.AS);
+		String icePassword = null, iceUser = null;
+
+		@SuppressWarnings("unchecked")
+		Vector<AttributeField> attributeList = sdp.getAttributes(false);
+		if (attributeList != null) {
+			for (AttributeField att : attributeList) {
+				if (att.getName().equalsIgnoreCase(ICE_PWD)) {
+					icePassword = att.getValue();
+				} else if (att.getName().equalsIgnoreCase(ICE_UFRAG)) {
+					iceUser = att.getValue();
+				} else {
+					log.warn("Unknown atribute: " + att.getName() + ", value: "
+							+ att.getValue());
+				}
+			}
+		}
+
 		for (MediaDescription media : sdpMedias) {
 			try {
 				int mediaBandWidth = media.getBandwidth(BandWidth.AS);
@@ -76,6 +110,7 @@ public class SdpConversor {
 						&& (mediaBandWidth <= 0 || mediaBandWidth > bandWidth))
 					media.setBandwidth(BandWidth.AS, bandWidth);
 				MediaSpec ms = sdp2MediaSpec(media, sdp);
+				setIceUserPasswd(ms, iceUser, icePassword);
 				medias.add(ms);
 			} catch (SdpException ex) {
 
@@ -84,6 +119,25 @@ public class SdpConversor {
 
 		SessionSpec spec = new SessionSpec(medias, sdp.getOrigin().getSessionId() + "");
 		return spec;
+	}
+
+	private static void setIceUserPasswd(MediaSpec ms, String iceUser,
+			String icePassword) {
+		if (iceUser == null || icePassword == null || ms == null)
+			return;
+
+		if (!ms.isSetTransport() || !ms.getTransport().isSetIce())
+			return;
+
+		TransportIce ice = ms.getTransport().getIce();
+
+		if (!ice.isSetCandidates())
+			return;
+
+		for (TransportIceCandidate cand : ice.getCandidates()) {
+			cand.setPassword(icePassword);
+			cand.setUsername(iceUser);
+		}
 	}
 
 	private static MediaSpec sdp2MediaSpec(MediaDescription md,
@@ -109,6 +163,11 @@ public class SdpConversor {
 
 			}
 		}
+
+		Transport transport = new Transport();
+		TransportRtp transportRtp = new TransportRtp(sdp.getConnection()
+				.getAddress(), media.getMediaPort());
+		transport.setRtp(transportRtp);
 
 		@SuppressWarnings("unchecked")
 		Vector<AttributeField> atributeList = md.getAttributes(false);
@@ -147,11 +206,93 @@ public class SdpConversor {
 						FormatParametersConversor.parseExtraAttributes(
 								payload, field.getValue());
 					}
+				} else if (ICE_CANDIDATE.equalsIgnoreCase(name)) {
+					String candStr = field.getValue();
+					String[] tokens = candStr.split(" ");
+					TransportIceCandidate cand = new TransportIceCandidate();
+
+					if (tokens.length < 8) {
+						log.warn("Ignoring candidate with invalid number of tokens: "
+								+ candStr);
+						continue;
+					}
+
+					TransportIceCandidateType type;
+					TransportIceCandidateTransport iceTransport;
+					int port;
+					int componentId;
+					int priority;
+
+					int i = find_token(tokens, "typ");
+					if (i > 0 && tokens.length >= i + 1) {
+						type = TransportIceCandidateTypeUtils
+								.getFromString(tokens[i + 1]);
+						if (type == null)
+							continue;
+
+						cand.setType(type);
+					} else {
+						continue;
+					}
+
+					iceTransport = TransportIceCandidateTransportUtils
+							.getFromString(tokens[2]);
+					if (iceTransport == null)
+						continue;
+					cand.setTransport(iceTransport);
+
+					try {
+						port = Integer.parseInt(tokens[5]);
+						cand.setPort(port);
+					} catch (NumberFormatException e) {
+						continue;
+					}
+
+					try {
+						componentId = Integer.parseInt(tokens[1]);
+						cand.setComponentId(componentId);
+					} catch (NumberFormatException e) {
+						continue;
+					}
+
+					cand.setAddress(tokens[4]);
+
+					try {
+						priority = Integer.parseInt(tokens[3]);
+						cand.setPriority(priority);
+					} catch (NumberFormatException e) {
+						continue;
+					}
+
+					if (tokens[0].length() <= FOUNDATION_MAX_LEN)
+						cand.setFoundation(tokens[0]);
+					else
+						continue;
+
+					i = find_token(tokens, "raddr");
+					if (i > 0 && tokens.length >= i + 1)
+						cand.setBaseAddress(tokens[i + 1]);
+
+					i = find_token(tokens, "rport");
+					if (i > 0 && tokens.length >= i + 1) {
+						try {
+							int basePort;
+							basePort = Integer.parseInt(tokens[5]);
+							cand.setBasePort(basePort);
+						} catch (NumberFormatException e) {
+							continue;
+						}
+					}
+
+					if (!transport.isSetIce())
+						transport.setIce(new TransportIce());
+
+					transport.getIce().addToCandidates(cand);
+
 				} else if (mode != null) {
 					mediaTypeMode = mode;
-					// } else {
-					// log.debug("Media attribute ingnored: " +
-					// field.getName());
+				} else {
+					log.warn("Ignored field name: " + field.getName());
 				}
 			}
 		}
@@ -159,16 +300,21 @@ public class SdpConversor {
 		HashSet<MediaType> types = new HashSet<MediaType>();
 		types.add(MediaType.valueOf(media.getMediaType().toUpperCase()));
 
-		Transport transport = new Transport();
-		TransportRtp transportRtp = new TransportRtp(sdp.getConnection()
-				.getAddress(), media.getMediaPort());
-		transport.setRtp(transportRtp);
-
 		if (mediaTypeMode == null)
 			mediaTypeMode = Direction.SENDRECV;
 
 		MediaSpec ms = new MediaSpec(payloads, types, transport, mediaTypeMode);
 		return ms;
+	}
+
+	private static int find_token(String[] tokens, String str) {
+		for (int i =0; i < tokens.length; i++) {
+			String token = tokens[i];
+			if (token.equalsIgnoreCase(str))
+				return i;
+		}
+
+		return -1;
 	}
 
 	private static Payload sdp2Payload(String format, MediaDescription md)
@@ -195,6 +341,7 @@ public class SdpConversor {
 			if (values.length == 3)
 				rtp.setChannels(Integer.parseInt(values[2]));
 		}
+
 		int bitrate = md.getBandwidth(BandWidth.AS);
 		if (bitrate > 0)
 			rtp.setBitrate(bitrate);
