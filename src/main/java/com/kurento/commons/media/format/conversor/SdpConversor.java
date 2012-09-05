@@ -594,6 +594,7 @@ public class SdpConversor {
 		StringBuilder sb = new StringBuilder();
 
 		String address = getAddress(spec);
+		IceUserPasswordContainer iceUserPassw = getIceUserPassword(spec);
 
 		sb.append(SDPFieldNames.PROTO_VERSION_FIELD + DEFAULT_SDP_VERSION
 				+ ENDLINE);
@@ -605,6 +606,12 @@ public class SdpConversor {
 		sb.append(SDPFieldNames.CONNECTION_FIELD + SDPKeywords.IN + " "
 				+ SDPKeywords.IPV4 + " " + address + ENDLINE);
 		sb.append(SDPFieldNames.TIME_FIELD + "0 0" + ENDLINE);
+		if (iceUserPassw.bothSet()) {
+			sb.append(SDPFieldNames.ATTRIBUTE_FIELD + ICE_PWD + ":"
+					+ iceUserPassw.password + ENDLINE);
+			sb.append(SDPFieldNames.ATTRIBUTE_FIELD + ICE_UFRAG + ":"
+					+ iceUserPassw.user + ENDLINE);
+		}
 
 		for (MediaSpec media : spec.getMedias()) {
 			sb.append(mediaSpec2Sdp(media));
@@ -661,6 +668,35 @@ public class SdpConversor {
 		else
 			sb.append(media.getDirection().toString().toLowerCase());
 		sb.append(ENDLINE);
+
+		if (media.getTransport().isSetIce()) {
+			TransportIce ice = media.getTransport().getIce();
+
+			if (ice.isSetCandidates()) {
+				for (TransportIceCandidate cand : ice.getCandidates()) {
+					TransportIceCandidateType type = cand.getType();
+
+					sb.append(SDPFieldNames.ATTRIBUTE_FIELD + ICE_CANDIDATE
+							+ ":");
+					sb.append(cand.getFoundation() + " "
+							+ cand.getComponentId() + " ");
+					sb.append(TransportIceCandidateTransportUtils
+							.toSdpString(cand.getTransport()) + " ");
+					sb.append(cand.getPriority() + " ");
+					sb.append(cand.getAddress() + " ");
+					sb.append(cand.getPort() + " ");
+					sb.append("typ "
+							+ TransportIceCandidateTypeUtils.toSdpString(type));
+					if (type != TransportIceCandidateType.HOST
+							&& cand.isSetBaseAddress() && cand.isSetBasePort()) {
+						sb.append(" raddr " + cand.getBaseAddress());
+						sb.append(" rport " + cand.getBasePort());
+					}
+					sb.append(ENDLINE);
+				}
+			}
+		}
+
 		if (bitRate > 0)
 			sb.append(SDPFieldNames.BANDWIDTH_FIELD + BandWidth.AS + ":"
 					+ bitRate + ENDLINE);
@@ -708,5 +744,48 @@ public class SdpConversor {
 		if (address == null)
 			throw new SdpException("Address not found");
 		return address;
+	}
+
+	private static IceUserPasswordContainer getIceUserPassword(SessionSpec spec)
+			throws SdpException {
+		IceUserPasswordContainer ret = new IceUserPasswordContainer();
+
+		for (MediaSpec media : spec.getMedias()) {
+			TransportIce tr = null;
+			if (!media.getTransport().isSetIce())
+				continue;
+
+			tr = media.getTransport().getIce();
+
+			if (!tr.isSetCandidates())
+				continue;
+
+			for (TransportIceCandidate cand : tr.getCandidates()) {
+				if (ret.user == null)
+					ret.user = cand.getUsername();
+				else if (!ret.user.equalsIgnoreCase(cand.getUsername())) {
+					throw new SdpException(
+							"Ice user does not match on all medias");
+				}
+
+				if (ret.password == null)
+					ret.password = cand.getPassword();
+				else if (!ret.password.equalsIgnoreCase(cand.getPassword())) {
+					throw new SdpException(
+							"Password does not match on all medias");
+				}
+			}
+		}
+
+		return ret;
+	}
+
+	private static class IceUserPasswordContainer {
+		public String user = null;
+		public String password = null;
+
+		public boolean bothSet() {
+			return user != null && password != null;
+		}
 	}
 }

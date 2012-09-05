@@ -129,9 +129,14 @@ public class Sdp2SessionSpecTest extends TestCase {
 			}
 
 			spec = SdpConversor.sdp2SessionSpec(sdp4);
+			String generated;
 			log.info("Sdp:\n" + sdp4);
 			log.info("SessionSpec:\n" + spec);
-			log.info("Generated:\n" + SdpConversor.sessionSpec2Sdp(spec));
+			generated = SdpConversor.sessionSpec2Sdp(spec);
+			log.info("Generated:\n" + generated);
+			SessionSpec spec2 = SdpConversor.sdp2SessionSpec(generated);
+			log.info("SessionSpec2:\n" + spec2);
+			assertEquals(spec, spec2);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
