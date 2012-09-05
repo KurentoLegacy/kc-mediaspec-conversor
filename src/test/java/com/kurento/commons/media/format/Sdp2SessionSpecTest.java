@@ -18,7 +18,6 @@
 package com.kurento.commons.media.format;
 
 import javax.sdp.SdpException;
-import javax.sdp.SdpParseException;
 
 import junit.framework.TestCase;
 
@@ -136,56 +135,6 @@ public class Sdp2SessionSpecTest extends TestCase {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-	}
-
-	public void testProcessSdpWrong() {
-		log.debug("--------------------------- init testProcessSdpWrong ---------------------------");
-		// video wrong written
-		String sdpStr = "v=0\r\n" +
-						"o=- 12345 12345 IN IP4 127.0.0.1\r\n" +
-						"s=-\r\n" +
-						"c=IN IP4 127.0.0.1\r\n" +
-						"t=0 0\r\n " +
-						"m=vdeo 46250 RTP/AVP 96\r\n" +
-						"a=rtpmap:96 MP4V-ES/90000\r\n" +
-						"a=sendrecv\r\n" +
-						"b=AS:500\r\n";
-
-		Object o = null;
-		try {
-			SdpConversor.sdp2SessionSpec(sdpStr);
-		} catch (Throwable t) {
-			assertEquals(SdpParseException.class, t.getClass());
-			o = assertObject;
-		}
-		assertEquals(assertObject, o);
-
-		log.debug("--------------------------- finish testProcessSdpWrong ---------------------------");
-	}
-
-	public void testProcessPayloadWrong() throws Exception {
-		log.debug("--------------------------- init testProcessPayloadWrong ---------------------------");
-		// change 96 by 97
-		String sdpStr = "v=0\r\n" +
-						"o=- 12345 12345 IN IP4 127.0.0.1\r\n" +
-						"s=-\r\n" +
-						"c=IN IP4 127.0.0.1\r\n" +
-						"t=0 0\r\n" +
-						"m=video 46250 RTP/AVP 96\r\n" +
-						"a=rtpmap:97 MP4V-ES/90000\r\n" +
-						"a=sendrecv\r\n" +
-						"b=AS:500\r\n";
-
-		Object o = null;
-		try {
-			SdpConversor.sdp2SessionSpec(sdpStr);
-		} catch (Throwable t) {
-			assertEquals(SdpParseException.class, t.getClass());
-			o = assertObject;
-		}
-		assertEquals(null, o);
-
-		log.debug("--------------------------- finish testProcessPayloadWrong ---------------------------");
 	}
 
 }
