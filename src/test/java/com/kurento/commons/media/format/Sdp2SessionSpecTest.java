@@ -88,6 +88,100 @@ public class Sdp2SessionSpecTest extends TestCase {
 			"a=candidate:2 1 UDP 1694498815 192.0.2.3 45664 typ srflx " +
 			"raddr 10.0.1.1 rport 8998\r\n";
 
+	private static String sdp5 = "v=0\r\n" +
+			"o=- 2913691721 2 IN IP4 127.0.0.1\r\n" +
+			"s=\r\n" +
+			"t=0 0\r\n" +
+			"a=group:BUNDLE audio video\r\n" +
+			"m=audio 43758 RTP/SAVPF 103 104 0 8 106 105 13 126\r\n" +
+			"c=IN IP4 193.147.51.16\r\n" +
+			"a=rtcp:1 IN IP4 0.0.0.0\r\n" +
+			"a=candidate:2023387037 1 udp 2130714367 193.147.51.16 43339 typ host generation 0\r\n" +
+			"a=candidate:4191316265 1 udp 1912610559 193.147.51.16 43758 typ srflx generation 0\r\n" +
+			"a=candidate:907645805 1 tcp 1694506751 193.147.51.16 50782 typ host generation 0\r\n" +
+			"a=ice-ufrag:Xv/1NJ8ftUdyQP3/\r\n" +
+			"a=ice-pwd:fdl4twuPPWbw1O6B7RviQl8j\r\n" +
+			"a=sendrecv\r\n" +
+			"a=mid:audio\r\n" +
+			"a=rtcp-mux\r\n" +
+			"a=crypto:1 AES_CM_128_HMAC_SHA1_80 inline:bBrIQP9mEN1ieWXIK0SWf2LxACcXAtdVJJi6++EL\r\n" +
+			"a=rtpmap:103 ISAC/16000\r\n" +
+			"a=rtpmap:104 ISAC/32000\r\n" +
+			"a=rtpmap:0 PCMU/8000\r\n" +
+			"a=rtpmap:8 PCMA/8000\r\n" +
+			"a=rtpmap:106 CN/32000\r\n" +
+			"a=rtpmap:105 CN/16000\r\n" +
+			"a=rtpmap:13 CN/8000\r\n" +
+			"a=rtpmap:126 telephone-event/8000\r\n" +
+			"a=ssrc:3689591462 cname:6feIHETBbPgUvli9\r\n" +
+			"a=ssrc:3689591462 mslabel:3k46NcmVwsU29O6aV2AJyeej3BIPCl4pQ70V\r\n" +
+			"a=ssrc:3689591462 label:3k46NcmVwsU29O6aV2AJyeej3BIPCl4pQ70V00\r\n" +
+			"m=video 43758 RTP/SAVPF 100 101 102\r\n" +
+			"c=IN IP4 193.147.51.16\r\n" +
+			"a=rtcp:1 IN IP4 0.0.0.0\r\n" +
+			"a=candidate:2023387037 1 udp 2130714367 193.147.51.16 43339 typ host generation 0\r\n" +
+			"a=candidate:4191316265 1 udp 1912610559 193.147.51.16 43758 typ srflx generation 0\r\n" +
+			"a=candidate:907645805 1 tcp 1694506751 193.147.51.16 50782 typ host generation 0\r\n" +
+			"a=ice-ufrag:Xv/1NJ8ftUdyQP3/\r\n" +
+			"a=ice-pwd:fdl4twuPPWbw1O6B7RviQl8j\r\n" +
+			"a=sendrecv\r\n" +
+			"a=mid:video\r\n" +
+			"a=rtcp-mux\r\n" +
+			"a=crypto:1 AES_CM_128_HMAC_SHA1_80 inline:bBrIQP9mEN1ieWXIK0SWf2LxACcXAtdVJJi6++EL\r\n" +
+			"a=rtpmap:100 VP8/90000\r\n" +
+			"a=rtpmap:101 red/90000\r\n" +
+			"a=rtpmap:102 ulpfec/90000\r\n" +
+			"a=ssrc:118467033 cname:6feIHETBbPgUvli9\r\n" +
+			"a=ssrc:118467033 mslabel:3k46NcmVwsU29O6aV2AJyeej3BIPCl4pQ70V\r\n" +
+			"a=ssrc:118467033 label:3k46NcmVwsU29O6aV2AJyeej3BIPCl4pQ70V10\r\n";
+
+	private static String sdp6 = "v=0\r\n" +
+			"o=- 2913691721 2 IN IP4 127.0.0.1\r\n" +
+			"s=\r\n" +
+			"t=0 0\r\n" +
+			"a=group:BUNDLE audio video\r\n" +
+			"m=audio 43758 RTP/SAVPF 103 104 0 8 106 105 13 126\r\n" +
+			"c=IN IP4 193.147.51.16\r\n" +
+			"a=rtcp:1 IN IP4 0.0.0.0\r\n" +
+			"a=candidate:2023387037 1 udp 2130714367 193.147.51.16 43339 typ host generation 0\r\n" +
+			"a=candidate:4191316265 1 udp 1912610559 193.147.51.16 43758 typ srflx generation 0\r\n" +
+			"a=candidate:907645805 1 tcp 1694506751 193.147.51.16 50782 typ host generation 0\r\n" +
+			"a=ice-ufrag:Xv/1NJ8ftUdyQP3/\r\n" +
+			"a=ice-pwd:1O6B7RviQl8jfdl4twuPPWbw\r\n" +
+			"a=sendrecv\r\n" +
+			"a=mid:audio\r\n" +
+			"a=rtcp-mux\r\n" +
+			"a=crypto:1 AES_CM_128_HMAC_SHA1_80 inline:bBrIQP9mEN1ieWXIK0SWf2LxACcXAtdVJJi6++EL\r\n" +
+			"a=rtpmap:103 ISAC/16000\r\n" +
+			"a=rtpmap:104 ISAC/32000\r\n" +
+			"a=rtpmap:0 PCMU/8000\r\n" +
+			"a=rtpmap:8 PCMA/8000\r\n" +
+			"a=rtpmap:106 CN/32000\r\n" +
+			"a=rtpmap:105 CN/16000\r\n" +
+			"a=rtpmap:13 CN/8000\r\n" +
+			"a=rtpmap:126 telephone-event/8000\r\n" +
+			"a=ssrc:3689591462 cname:6feIHETBbPgUvli9\r\n" +
+			"a=ssrc:3689591462 mslabel:3k46NcmVwsU29O6aV2AJyeej3BIPCl4pQ70V\r\n" +
+			"a=ssrc:3689591462 label:3k46NcmVwsU29O6aV2AJyeej3BIPCl4pQ70V00\r\n" +
+			"m=video 43758 RTP/SAVPF 100 101 102\r\n" +
+			"c=IN IP4 193.147.51.16\r\n" +
+			"a=rtcp:1 IN IP4 0.0.0.0\r\n" +
+			"a=candidate:2023387037 1 udp 2130714367 193.147.51.16 43339 typ host generation 0\r\n" +
+			"a=candidate:4191316265 1 udp 1912610559 193.147.51.16 43758 typ srflx generation 0\r\n" +
+			"a=candidate:907645805 1 tcp 1694506751 193.147.51.16 50782 typ host generation 0\r\n" +
+			"a=ice-ufrag:Xv/1NJ8ftUdyQP3/\r\n" +
+			"a=ice-pwd:fdl4twuPPWbw1O6B7RviQl8j\r\n" +
+			"a=sendrecv\r\n" +
+			"a=mid:video\r\n" +
+			"a=rtcp-mux\r\n" +
+			"a=crypto:1 AES_CM_128_HMAC_SHA1_80 inline:bBrIQP9mEN1ieWXIK0SWf2LxACcXAtdVJJi6++EL\r\n" +
+			"a=rtpmap:100 VP8/90000\r\n" +
+			"a=rtpmap:101 red/90000\r\n" +
+			"a=rtpmap:102 ulpfec/90000\r\n" +
+			"a=ssrc:118467033 cname:6feIHETBbPgUvli9\r\n" +
+			"a=ssrc:118467033 mslabel:3k46NcmVwsU29O6aV2AJyeej3BIPCl4pQ70V\r\n" +
+			"a=ssrc:118467033 label:3k46NcmVwsU29O6aV2AJyeej3BIPCl4pQ70V10\r\n";
+
 	public void testInit() {
 		try {
 			SessionSpec spec = SdpConversor.sdp2SessionSpec(sdp);
@@ -135,6 +229,24 @@ public class Sdp2SessionSpecTest extends TestCase {
 			generated = SdpConversor.sessionSpec2Sdp(spec);
 			log.info("Generated:\n" + generated);
 			SessionSpec spec2 = SdpConversor.sdp2SessionSpec(generated);
+			log.info("SessionSpec2:\n" + spec2);
+			assertEquals(spec, spec2);
+
+			log.info("Sdp:\n" + sdp5);
+			spec = SdpConversor.sdp2SessionSpec(sdp5);
+			log.info("SessionSpec:\n" + spec);
+			generated = SdpConversor.sessionSpec2Sdp(spec);
+			log.info("Generated:\n" + generated);
+			spec2 = SdpConversor.sdp2SessionSpec(generated);
+			log.info("SessionSpec2:\n" + spec2);
+			assertEquals(spec, spec2);
+
+			log.info("Sdp:\n" + sdp6);
+			spec = SdpConversor.sdp2SessionSpec(sdp6);
+			log.info("SessionSpec:\n" + spec);
+			generated = SdpConversor.sessionSpec2Sdp(spec);
+			log.info("Generated:\n" + generated);
+			spec2 = SdpConversor.sdp2SessionSpec(generated);
 			log.info("SessionSpec2:\n" + spec2);
 			assertEquals(spec, spec2);
 		} catch (Exception e) {

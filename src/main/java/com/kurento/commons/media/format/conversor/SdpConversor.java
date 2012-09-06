@@ -35,6 +35,7 @@ import javax.sdp.SdpException;
 import javax.sdp.SdpFactory;
 import javax.sdp.SessionDescription;
 
+import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -135,8 +136,11 @@ public class SdpConversor {
 			return;
 
 		for (TransportIceCandidate cand : ice.getCandidates()) {
-			cand.setPassword(icePassword);
-			cand.setUsername(iceUser);
+			if (!cand.isSetPassword())
+				cand.setPassword(icePassword);
+
+			if (!cand.isSetUsername())
+				cand.setUsername(iceUser);
 		}
 	}
 
@@ -165,12 +169,23 @@ public class SdpConversor {
 		}
 
 		Transport transport = new Transport();
-		TransportRtp transportRtp = new TransportRtp(sdp.getConnection()
-				.getAddress(), media.getMediaPort());
-		transport.setRtp(transportRtp);
+		if (md.getConnection() != null) {
+			TransportRtp transportRtp = new TransportRtp(md.getConnection()
+					.getAddress(), media.getMediaPort());
+			transport.setRtp(transportRtp);
+		} else if (sdp.getConnection() != null) {
+			TransportRtp transportRtp = new TransportRtp(sdp.getConnection()
+					.getAddress(), media.getMediaPort());
+			transport.setRtp(transportRtp);
+		} else {
+			throw new SdpException("Invalid connection");
+		}
 
 		@SuppressWarnings("unchecked")
 		Vector<AttributeField> atributeList = md.getAttributes(false);
+		String password = null;
+		String user = null;
+
 		if (atributeList != null && !atributeList.isEmpty()) {
 			for (AttributeField field : atributeList) {
 				String name = field.getName();
@@ -288,7 +303,10 @@ public class SdpConversor {
 						transport.setIce(new TransportIce());
 
 					transport.getIce().addToCandidates(cand);
-
+				} else if (name.equalsIgnoreCase(ICE_PWD)) {
+					password = field.getValue();
+				} else if (name.equalsIgnoreCase(ICE_UFRAG)) {
+					user = field.getValue();
 				} else if (mode != null) {
 					mediaTypeMode = mode;
 				} else {
@@ -304,6 +322,8 @@ public class SdpConversor {
 			mediaTypeMode = Direction.SENDRECV;
 
 		MediaSpec ms = new MediaSpec(payloads, types, transport, mediaTypeMode);
+
+		setIceUserPasswd(ms, user, password);
 		return ms;
 	}
 
@@ -588,8 +608,15 @@ public class SdpConversor {
 
 	public static String sessionSpec2Sdp(SessionSpec spec)
 			throws SdpException {
+
 		if (spec == null)
 			return "";
+
+		try {
+			spec.validate();
+		} catch (TException e) {
+			throw new SdpException(e);
+		}
 
 		StringBuilder sb = new StringBuilder();
 
@@ -606,6 +633,7 @@ public class SdpConversor {
 		sb.append(SDPFieldNames.CONNECTION_FIELD + SDPKeywords.IN + " "
 				+ SDPKeywords.IPV4 + " " + address + ENDLINE);
 		sb.append(SDPFieldNames.TIME_FIELD + "0 0" + ENDLINE);
+
 		if (iceUserPassw.bothSet()) {
 			sb.append(SDPFieldNames.ATTRIBUTE_FIELD + ICE_PWD + ":"
 					+ iceUserPassw.password + ENDLINE);
@@ -614,20 +642,34 @@ public class SdpConversor {
 		}
 
 		for (MediaSpec media : spec.getMedias()) {
-			sb.append(mediaSpec2Sdp(media));
+			sb.append(mediaSpec2Sdp(media, iceUserPassw));
 		}
 
 		return sb.toString();
 	}
 
-	private static String mediaSpec2Sdp(MediaSpec media) {
+	private static String mediaSpec2Sdp(MediaSpec media,
+			IceUserPasswordContainer iceUserPassw) throws SdpException {
 		StringBuilder sb = new StringBuilder();
 		Set<MediaType> types = media.getType();
 		TransportRtp transport;
+
+		try {
+			media.validate();
+		} catch (TException e) {
+			throw new SdpException(e);
+		}
+
 		if (!media.getTransport().isSetRtp())
 			return "";
 
 		transport = media.getTransport().getRtp();
+
+		try {
+			transport.validate();
+		} catch (TException e) {
+			throw new SdpException(e);
+		}
 
 		if (types.size() != 1) {
 			return "";
@@ -660,6 +702,17 @@ public class SdpConversor {
 			}
 		}
 		sb.append(ENDLINE);
+
+		if (!iceUserPassw.bothSet()) {
+			IceUserPasswordContainer mediaIceUserPassw = getIceUserPassword(media);
+			if (mediaIceUserPassw.bothSet()) {
+				sb.append(SDPFieldNames.ATTRIBUTE_FIELD + ICE_PWD + ":"
+						+ mediaIceUserPassw.password + ENDLINE);
+				sb.append(SDPFieldNames.ATTRIBUTE_FIELD + ICE_UFRAG + ":"
+						+ mediaIceUserPassw.user + ENDLINE);
+			}
+		}
+
 		sb.append(payloadString);
 
 		sb.append(SDPFieldNames.ATTRIBUTE_FIELD);
@@ -672,8 +725,20 @@ public class SdpConversor {
 		if (media.getTransport().isSetIce()) {
 			TransportIce ice = media.getTransport().getIce();
 
+			try {
+				ice.validate();
+			} catch (TException e) {
+				throw new SdpException(e);
+			}
+
 			if (ice.isSetCandidates()) {
 				for (TransportIceCandidate cand : ice.getCandidates()) {
+					try {
+						cand.validate();
+					} catch (TException e) {
+						throw new SdpException(e);
+					}
+
 					TransportIceCandidateType type = cand.getType();
 
 					sb.append(SDPFieldNames.ATTRIBUTE_FIELD + ICE_CANDIDATE
@@ -704,8 +769,15 @@ public class SdpConversor {
 		return sb.toString();
 	}
 
-	private static String payloadRtp2Sdp(PayloadRtp payload) {
+	private static String payloadRtp2Sdp(PayloadRtp payload)
+			throws SdpException {
 		StringBuilder sb = new StringBuilder();
+
+		try {
+			payload.validate();
+		} catch (TException e) {
+			throw new SdpException(e);
+		}
 
 		sb.append(SDPFieldNames.ATTRIBUTE_FIELD + SdpConstants.RTPMAP + ":"
 				+ payload.getId() + " " + payload.getCodecName() + "/"
@@ -751,29 +823,72 @@ public class SdpConversor {
 		IceUserPasswordContainer ret = new IceUserPasswordContainer();
 
 		for (MediaSpec media : spec.getMedias()) {
-			TransportIce tr = null;
-			if (!media.getTransport().isSetIce())
-				continue;
+			IceUserPasswordContainer value = getIceUserPassword(media);
 
-			tr = media.getTransport().getIce();
+			if (ret.password == null) {
+				ret.password = value.password;
+			} else if (value.password != null
+					&& !ret.password.equalsIgnoreCase(value.password)) {
+				ret.password = null;
+				ret.user = null;
+				return ret;
+			}
 
-			if (!tr.isSetCandidates())
-				continue;
+			if (ret.user == null) {
+				ret.user = value.user;
+			} else if (value.user != null
+					&& !ret.user.equalsIgnoreCase(value.user)) {
+				ret.password = null;
+				ret.user = null;
+				return ret;
+			}
+		}
 
-			for (TransportIceCandidate cand : tr.getCandidates()) {
-				if (ret.user == null)
-					ret.user = cand.getUsername();
-				else if (!ret.user.equalsIgnoreCase(cand.getUsername())) {
-					throw new SdpException(
-							"Ice user does not match on all medias");
-				}
+		return ret;
+	}
 
-				if (ret.password == null)
-					ret.password = cand.getPassword();
-				else if (!ret.password.equalsIgnoreCase(cand.getPassword())) {
-					throw new SdpException(
-							"Password does not match on all medias");
-				}
+	private static IceUserPasswordContainer getIceUserPassword(MediaSpec media)
+			throws SdpException {
+		IceUserPasswordContainer ret = new IceUserPasswordContainer();
+
+		try {
+			media.validate();
+		} catch (TException e) {
+			throw new SdpException(e);
+		}
+
+		TransportIce tr = null;
+		if (!media.getTransport().isSetIce())
+			return ret;
+
+		tr = media.getTransport().getIce();
+
+		try {
+			tr.validate();
+		} catch (TException e) {
+			throw new SdpException(e);
+		}
+
+		for (TransportIceCandidate cand : tr.getCandidates()) {
+
+			try {
+				cand.validate();
+			} catch (TException e) {
+				throw new SdpException(e);
+			}
+
+			if (ret.user == null)
+				ret.user = cand.getUsername();
+			else if (!ret.user.equalsIgnoreCase(cand.getUsername())) {
+				throw new SdpException(
+						"Ice user does not match on all candidates");
+			}
+
+			if (ret.password == null)
+				ret.password = cand.getPassword();
+			else if (!ret.password.equalsIgnoreCase(cand.getPassword())) {
+				throw new SdpException(
+						"Password does not match on all candidates");
 			}
 		}
 
