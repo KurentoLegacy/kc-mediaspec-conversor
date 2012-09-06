@@ -621,17 +621,25 @@ public class SdpConversor {
 		StringBuilder sb = new StringBuilder();
 
 		String address = getAddress(spec);
+		String addressOrigin;
+
+		if (address == null)
+			addressOrigin = "127.0.0.1";
+		else
+			addressOrigin = address;
+
 		IceUserPasswordContainer iceUserPassw = getIceUserPassword(spec);
 
 		sb.append(SDPFieldNames.PROTO_VERSION_FIELD + DEFAULT_SDP_VERSION
 				+ ENDLINE);
 		sb.append(SDPFieldNames.ORIGIN_FIELD + DEFAULT_NAME + " "
 				+ spec.getId() + " " + DEFAULT_VERSION + " " + SDPKeywords.IN
-				+ " " + SDPKeywords.IPV4 + " " + address + ENDLINE);
+				+ " " + SDPKeywords.IPV4 + " " + addressOrigin + ENDLINE);
 		sb.append(SDPFieldNames.SESSION_NAME_FIELD + DEFAULT_SESSION_NAME
 				+ ENDLINE);
-		sb.append(SDPFieldNames.CONNECTION_FIELD + SDPKeywords.IN + " "
-				+ SDPKeywords.IPV4 + " " + address + ENDLINE);
+		if (address != null)
+			sb.append(SDPFieldNames.CONNECTION_FIELD + SDPKeywords.IN + " "
+					+ SDPKeywords.IPV4 + " " + address + ENDLINE);
 		sb.append(SDPFieldNames.TIME_FIELD + "0 0" + ENDLINE);
 
 		if (iceUserPassw.bothSet()) {
@@ -642,14 +650,15 @@ public class SdpConversor {
 		}
 
 		for (MediaSpec media : spec.getMedias()) {
-			sb.append(mediaSpec2Sdp(media, iceUserPassw));
+			sb.append(mediaSpec2Sdp(media, iceUserPassw, address));
 		}
 
 		return sb.toString();
 	}
 
 	private static String mediaSpec2Sdp(MediaSpec media,
-			IceUserPasswordContainer iceUserPassw) throws SdpException {
+			IceUserPasswordContainer iceUserPassw, String address)
+			throws SdpException {
 		StringBuilder sb = new StringBuilder();
 		Set<MediaType> types = media.getType();
 		TransportRtp transport;
@@ -711,6 +720,12 @@ public class SdpConversor {
 				sb.append(SDPFieldNames.ATTRIBUTE_FIELD + ICE_UFRAG + ":"
 						+ mediaIceUserPassw.user + ENDLINE);
 			}
+		}
+
+		if (address == null) {
+			String mediaAddress = getAddress(media);
+			sb.append(SDPFieldNames.CONNECTION_FIELD + SDPKeywords.IN + " "
+					+ SDPKeywords.IPV4 + " " + mediaAddress + ENDLINE);
 		}
 
 		sb.append(payloadString);
@@ -800,22 +815,29 @@ public class SdpConversor {
 
 	private static String getAddress(SessionSpec spec) throws SdpException {
 		String address = null;
+
 		for (MediaSpec media : spec.getMedias()) {
-			TransportRtp tr = null;
-			if (!media.getTransport().isSetRtp())
-				continue;
+			String mediaAddress = getAddress(media);
 
-			tr = media.getTransport().getRtp();
-
-			if (address == null)
-				address = tr.getAddress();
-			else if (!address.equalsIgnoreCase(tr.getAddress())) {
-				throw new SdpException("Address does not match on all medias");
-			}
+			if (mediaAddress == null)
+				return null;
+			else if (address == null)
+				address = mediaAddress;
+			else if (!address.equalsIgnoreCase(mediaAddress))
+				return null;
 		}
-		if (address == null)
-			throw new SdpException("Address not found");
+
 		return address;
+	}
+
+	private static String getAddress(MediaSpec media) throws SdpException {
+		TransportRtp tr = null;
+		if (!media.getTransport().isSetRtp())
+			return null;
+
+		tr = media.getTransport().getRtp();
+
+		return tr.getAddress();
 	}
 
 	private static IceUserPasswordContainer getIceUserPassword(SessionSpec spec)

@@ -164,11 +164,11 @@ public class Sdp2SessionSpecTest extends TestCase {
 			"a=ssrc:3689591462 mslabel:3k46NcmVwsU29O6aV2AJyeej3BIPCl4pQ70V\r\n" +
 			"a=ssrc:3689591462 label:3k46NcmVwsU29O6aV2AJyeej3BIPCl4pQ70V00\r\n" +
 			"m=video 43758 RTP/SAVPF 100 101 102\r\n" +
-			"c=IN IP4 193.147.51.16\r\n" +
+			"c=IN IP4 193.147.51.19\r\n" +
 			"a=rtcp:1 IN IP4 0.0.0.0\r\n" +
-			"a=candidate:2023387037 1 udp 2130714367 193.147.51.16 43339 typ host generation 0\r\n" +
-			"a=candidate:4191316265 1 udp 1912610559 193.147.51.16 43758 typ srflx generation 0\r\n" +
-			"a=candidate:907645805 1 tcp 1694506751 193.147.51.16 50782 typ host generation 0\r\n" +
+			"a=candidate:2023387037 1 udp 2130714367 193.147.51.19 43339 typ host generation 0\r\n" +
+			"a=candidate:4191316265 1 udp 1912610559 193.147.51.19 43758 typ srflx generation 0\r\n" +
+			"a=candidate:907645805 1 tcp 1694506751 193.147.51.19 50782 typ host generation 0\r\n" +
 			"a=ice-ufrag:Xv/1NJ8ftUdyQP3/\r\n" +
 			"a=ice-pwd:fdl4twuPPWbw1O6B7RviQl8j\r\n" +
 			"a=sendrecv\r\n" +
