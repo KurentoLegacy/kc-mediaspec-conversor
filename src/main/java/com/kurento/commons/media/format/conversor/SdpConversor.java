@@ -162,9 +162,9 @@ public class SdpConversor {
 				Payload payload = sdp2Payload(format, md);
 				payloads.add(payload);
 			} catch (NumberFormatException ex) {
-
+				log.warn("Bad number format found in SDP:\n" + format);
 			} catch (SdpException ex) {
-
+				log.warn("Bad format found in SDP: " + format);
 			}
 		}
 
@@ -316,8 +316,12 @@ public class SdpConversor {
 		}
 
 		HashSet<MediaType> types = new HashSet<MediaType>();
-		types.add(MediaType.valueOf(media.getMediaType().toUpperCase()));
-
+		try {
+			types.add(MediaType.valueOf(media.getMediaType().toUpperCase()));
+		} catch (IllegalArgumentException e) {
+			throw new SdpException("Unknown Media Type: " + media.getMediaType().toUpperCase(),e);
+		}
+			
 		if (mediaTypeMode == null)
 			mediaTypeMode = Direction.SENDRECV;
 
@@ -346,9 +350,13 @@ public class SdpConversor {
 
 		PayloadRtp rtp;
 		if (tokens.length <= 1) {
-			rtp = getDefaultRtpPayload(id,
+			try{
+				rtp = getDefaultRtpPayload(id,
 					MediaType.valueOf(md.getMedia().getMediaType()
 							.toUpperCase()));
+			} catch (IllegalArgumentException e) {
+				throw new SdpException("Unknown Media Type: " + md.getMedia().getMediaType().toUpperCase(),e);
+			}
 		}else {
 			String[] values = tokens[1].split("/");
 			if (values.length != 2 && values.length != 3) {
