@@ -182,6 +182,22 @@ public class Sdp2SessionSpecTest extends TestCase {
 			"a=ssrc:118467033 mslabel:3k46NcmVwsU29O6aV2AJyeej3BIPCl4pQ70V\r\n" +
 			"a=ssrc:118467033 label:3k46NcmVwsU29O6aV2AJyeej3BIPCl4pQ70V10\r\n";
 
+	private static String sdp7 = "v=0\r\n" +
+			"o=- 12345 12345 IN IP4 89.131.152.18\r\n" +
+			"s=-\r\n" +
+			"c=IN IP4 89.131.152.18\r\n" +
+			"t=0 0\r\n" +
+			"m=video 45723 RTP/AVP 96\r\n" +
+			"a=rtpmap:96 MP4V-ES/90000\r\n" +
+			"a=extra-attr:96 w=352;h=288;fr=15/1\r\n" +
+			"a=sendrecv\r\n" +
+			"b=AS:288\r\n" +
+			"m=audio 41496 RTP/AVP 97\r\n" +
+			"a=rtpmap:97 AMR/8000/1\r\n" +
+			"a=FMTP:97 octet-align=1\r\n" +
+			"a=sendrecv\r\n" +
+			"b=AS:13\r\r";
+
 	public void testInit() {
 		try {
 			SessionSpec spec = SdpConversor.sdp2SessionSpec(sdp);
@@ -243,6 +259,15 @@ public class Sdp2SessionSpecTest extends TestCase {
 
 			log.info("Sdp:\n" + sdp6);
 			spec = SdpConversor.sdp2SessionSpec(sdp6);
+			log.info("SessionSpec:\n" + spec);
+			generated = SdpConversor.sessionSpec2Sdp(spec);
+			log.info("Generated:\n" + generated);
+			spec2 = SdpConversor.sdp2SessionSpec(generated);
+			log.info("SessionSpec2:\n" + spec2);
+			assertEquals(spec, spec2);
+
+			log.info("Sdp:\n" + sdp7);
+			spec = SdpConversor.sdp2SessionSpec(sdp7);
 			log.info("SessionSpec:\n" + spec);
 			generated = SdpConversor.sessionSpec2Sdp(spec);
 			log.info("Generated:\n" + generated);
